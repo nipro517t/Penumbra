@@ -32,8 +32,32 @@ enum State { IDLE, RUN, JUMP, FALL, WALL_SLIDE, CROUCH, SLIDE, DASH, LEDGE_HANG,
 @export var crouch_speed := 50.0
 ## Altura da cápsula agachado (precisa ser >= 2x o raio da cápsula).
 @export var crouch_height := 20.0
-@export var slide_speed := 230.0
+## Deslize curto, sem brasa.
+@export var slide_speed := 190.0
 @export var slide_friction := 350.0
+## Deslize com brasa (só ao correr): mais rápido e dura enquanto houver brasa e a corrida estiver ativa.
+@export var power_slide_speed := 280.0
+@export var power_slide_ember_per_second := 18.0
+## Duração máxima do deslize com brasa (0 = dura até a brasa acabar ou soltar a corrida).
+@export var power_slide_max_duration := 0.6
+
+@export_group("Corrida")
+@export var sprint_speed := 200.0
+## Custo da corrida por segundo. 0 = corrida grátis (funciona mesmo sem brasa).
+@export var sprint_ember_per_second := 0.0
+## Bônus no pulo feito correndo (0.05 = ~+10% de altura); o alcance vem da velocidade mantida no ar.
+@export var sprint_jump_boost := 0.05
+## Correr faz a sanidade cair mais devagar (1 = sem efeito).
+@export var sprint_sanity_drain_multiplier := 0.6
+@export var sprint_anim_scale := 1.5
+
+@export_group("Cura")
+## Segurar o botão de cura por este tempo converte brasa em sanidade.
+@export var heal_time := 1.0
+@export var heal_ember_cost := 25.0
+@export var heal_sanity_amount := 40.0
+## Velocidade máxima enquanto se cura (fração da normal).
+@export var heal_move_multiplier := 0.3
 
 @export_group("Dash")
 @export var dash_speed := 320.0
@@ -45,6 +69,10 @@ enum State { IDLE, RUN, JUMP, FALL, WALL_SLIDE, CROUCH, SLIDE, DASH, LEDGE_HANG,
 @export var dash_invincible := true
 ## No chão, o dash vira um deslize (usa a animação de slide e a colisão baixa).
 @export var dash_slides_on_ground := true
+## No ar, o dash vai em 8 direções (use o analógico/WASD). Desligado = só horizontal.
+@export var dash_air_8_directions := true
+## Força do dash para cima em relação ao horizontal (1.0 = igual).
+@export_range(0.3, 1.0) var dash_up_multiplier := 0.7
 
 @export_group("Quina")
 @export var ledge_enabled := true
@@ -59,9 +87,9 @@ enum State { IDLE, RUN, JUMP, FALL, WALL_SLIDE, CROUCH, SLIDE, DASH, LEDGE_HANG,
 @export var anim_y_offset := {"fall": 4.0, "wall_slide": 2.0}
 
 @export_group("Luz")
-@export var light_min_scale := 0.3
+@export var light_min_scale := 0.2
 @export var light_max_scale := 0.75
-@export var light_min_energy := 0.35
+@export var light_min_energy := 0.25
 @export var light_max_energy := 1.1
 
 var state: State = State.IDLE
@@ -87,6 +115,14 @@ var _dash_dir := 1
 var _afterimage_timer := 0.0
 var _crouched := false
 var _dash_on_ground := false
+var _dash_vec := Vector2.RIGHT
+var _dash_speed_now := 0.0
+var _slide_timer := 0.0
+var _sprinting := false
+var _air_sprint := false
+var _slide_powered := false
+var _slide_dir := 1
+var _heal_progress := 0.0
 var _sprite_base_y := 0.0
 var _radius := 6.0
 var _ledge_dir := 1
@@ -114,7 +150,7 @@ func _ready() -> void:
 	_sprite_base_y = sprite.position.y
 	_radius = capsule.radius
 	spawn_position = global_position
-	_ensure_slide_action()
+	_ensure_actions()
 
 
 func _physics_process(delta: float) -> void:
@@ -217,17 +253,33 @@ func _move_step(delta: float, dir: float) -> void:
 
 	var on_ground := is_on_floor() and velocity.y >= 0.0
 	var want_crouch := Input.is_action_pressed("crouch") or stuck_low
+	if on_ground:
+		_air_sprint = false
+	_update_heal(delta, on_ground)
 
 	# estado
 	if on_ground:
 		if state == State.SLIDE:
-			velocity.x = move_toward(velocity.x, 0.0, slide_friction * delta)
-			if absf(velocity.x) <= crouch_speed:
-				state = State.CROUCH if want_crouch else State.IDLE
+			_slide_timer += delta
+			var in_time := power_slide_max_duration <= 0.0 or _slide_timer < power_slide_max_duration
+			var powered := _slide_powered and in_time and Input.is_action_pressed("sprint") \
+					and ember.drain(power_slide_ember_per_second * delta)
+			if powered:
+				velocity.x = float(_slide_dir) * power_slide_speed
+				_trail(delta, 0.07)
+			else:
+				_slide_powered = false
+				velocity.x = move_toward(velocity.x, 0.0, slide_friction * delta)
+				if absf(velocity.x) <= crouch_speed:
+					state = State.CROUCH if want_crouch else State.IDLE
 		elif Input.is_action_just_pressed("slide"):
-			var slide_dir: int = int(signf(velocity.x)) if absf(velocity.x) > 5.0 else facing
-			facing = slide_dir
-			velocity.x = slide_dir * maxf(absf(velocity.x), slide_speed)
+			_slide_dir = int(signf(velocity.x)) if absf(velocity.x) > 5.0 else facing
+			facing = _slide_dir
+			# com brasa só se já estiver correndo e ainda segurando a corrida
+			_slide_powered = _sprinting and Input.is_action_pressed("sprint") and ember.energy > 0.0
+			_slide_timer = 0.0
+			var start_speed := power_slide_speed if _slide_powered else slide_speed
+			velocity.x = float(_slide_dir) * maxf(absf(velocity.x), start_speed)
 			state = State.SLIDE
 		elif want_crouch:
 			state = State.CROUCH
@@ -238,9 +290,26 @@ func _move_step(delta: float, dir: float) -> void:
 	else:
 		state = State.JUMP if velocity.y < 0.0 else State.FALL
 
+	if state != State.SLIDE:
+		_slide_powered = false
+
+	# corrida com brasa: segurando o botão, em movimento, no chão e com brasa
+	_sprinting = false
+	if on_ground and state != State.CROUCH and state != State.SLIDE and dir != 0.0 \
+			and Input.is_action_pressed("sprint") \
+			and _pay_sprint(delta):
+		_sprinting = true
+		_trail(delta, 0.09)
+
 	# controle horizontal
 	if _lock_timer <= 0.0 and state != State.SLIDE:
-		var speed_cap := crouch_speed if state == State.CROUCH else max_speed
+		var speed_cap := max_speed
+		if state == State.CROUCH:
+			speed_cap = crouch_speed
+		elif _sprinting or (not on_ground and _air_sprint):
+			speed_cap = sprint_speed
+		if _heal_progress > 0.0:
+			speed_cap *= heal_move_multiplier
 		var control := 1.0 if on_ground else air_control
 		if dir != 0.0:
 			velocity.x = move_toward(velocity.x, dir * speed_cap, acceleration * control * delta)
@@ -256,7 +325,8 @@ func _move_step(delta: float, dir: float) -> void:
 
 
 func _start_jump() -> void:
-	velocity.y = jump_velocity
+	velocity.y = jump_velocity * (1.0 + sprint_jump_boost if _sprinting else 1.0)
+	_air_sprint = _sprinting
 	_buffer_timer = 0.0
 	_coyote_timer = 0.0
 	state = State.JUMP
@@ -266,6 +336,7 @@ func _start_wall_jump() -> void:
 	velocity = Vector2(-_last_wall_side * wall_jump_velocity.x, wall_jump_velocity.y)
 	facing = -_last_wall_side
 	_lock_timer = wall_jump_lock_time
+	_air_sprint = false
 	_buffer_timer = 0.0
 	_wall_coyote_timer = 0.0
 	_coyote_timer = 0.0
@@ -370,24 +441,42 @@ func _ledge_climb_step(delta: float) -> void:
 
 # ----------------------------------------------------------------- dash
 
+## Direção do dash: no chão só horizontal (vira deslize); no ar, 8 direções.
+func _dash_direction(dir: float) -> Vector2:
+	var horizontal := float(int(signf(dir))) if dir != 0.0 else float(facing)
+	if is_on_floor() or not dash_air_8_directions:
+		return Vector2(horizontal, 0.0)
+	var aim := Input.get_vector("move_left", "move_right", "move_up", "crouch")
+	if aim.length() < 0.4:
+		return Vector2(float(facing), 0.0)
+	var step := PI / 4.0
+	return Vector2.from_angle(roundf(aim.angle() / step) * step)
+
+
 func _try_start_dash(dir: float) -> bool:
 	if not Input.is_action_just_pressed("dash"):
 		return false
-	var d: int = int(signf(dir)) if dir != 0.0 else facing
-	if _dash_cooldown_timer > 0.0 or _wall_side == d:
+	var vec := _dash_direction(dir)
+	var side := int(signf(vec.x)) if absf(vec.x) > 0.1 else 0
+	if _dash_cooldown_timer > 0.0 or (side != 0 and _wall_side == side):
 		return false
 	if not ember.spend(dash_ember_cost):
 		return false
 
-	_dash_dir = d
-	facing = d
+	_dash_vec = vec
+	_dash_dir = side if side != 0 else facing
+	facing = _dash_dir
+	# para cima o dash é mais curto (o diagonal fica no meio do caminho)
+	_dash_speed_now = dash_speed * (1.0 - (1.0 - dash_up_multiplier) * maxf(-vec.y, 0.0))
 	_dash_on_ground = dash_slides_on_ground and is_on_floor()
+	_sprinting = false
+	_heal_progress = 0.0
 	_dash_timer = dash_duration
 	_dash_cooldown_timer = dash_duration + dash_cooldown
 	_afterimage_timer = 0.0
 	_lock_timer = 0.0
 	invincible = dash_invincible
-	velocity = Vector2(d * dash_speed, 0.0)
+	velocity = _dash_vec * _dash_speed_now
 	state = State.DASH
 	dashed.emit()
 	return true
@@ -395,39 +484,58 @@ func _try_start_dash(dir: float) -> bool:
 
 func _dash_step(delta: float) -> void:
 	_dash_timer -= delta
-	velocity = Vector2(_dash_dir * dash_speed, 0.0)
+	velocity = _dash_vec * _dash_speed_now
 
 	_afterimage_timer -= delta
 	if _afterimage_timer <= 0.0:
 		_spawn_afterimage()
 		_afterimage_timer = 0.03
 
-	# pular durante o dash cancela o dash e mantém o impulso
+	# pular durante o dash (no chão) cancela o dash e mantém o impulso
 	if _buffer_timer > 0.0 and _coyote_timer > 0.0 and _can_stand():
 		_end_dash()
 		_start_jump()
 		velocity.x = _dash_dir * dash_speed * 0.85
 		return
 
-	if _dash_timer <= 0.0 or _wall_side == _dash_dir:
+	var side := int(signf(_dash_vec.x)) if absf(_dash_vec.x) > 0.1 else 0
+	var hit_wall := side != 0 and _wall_side == side
+	var hit_floor := _dash_vec.y > 0.1 and is_on_floor()
+	var hit_ceiling := _dash_vec.y < -0.1 and is_on_ceiling()
+	if _dash_timer <= 0.0 or hit_wall or hit_floor or hit_ceiling:
 		_end_dash()
 
 
 func _end_dash() -> void:
 	invincible = false
-	velocity.x = _dash_dir * dash_exit_speed
+	velocity = _dash_vec * dash_exit_speed
 	state = State.FALL if not is_on_floor() else State.IDLE
 
 
+## Cobra a corrida da brasa. Com custo 0 a corrida é grátis (não depende de ter brasa).
+func _pay_sprint(delta: float) -> bool:
+	if sprint_ember_per_second <= 0.0:
+		return true
+	return ember.drain(sprint_ember_per_second * delta)
+
+
+## Rastro leve para corrida e deslize com brasa.
+func _trail(delta: float, interval: float) -> void:
+	_afterimage_timer -= delta
+	if _afterimage_timer <= 0.0:
+		_spawn_afterimage(0.35)
+		_afterimage_timer = interval
+
+
 ## Rastro do dash: copia o frame atual e faz sumir (não precisa de asset de dash).
-func _spawn_afterimage() -> void:
+func _spawn_afterimage(alpha: float = 0.6) -> void:
 	var tex := sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame)
 	if tex == null:
 		return
 	var ghost := Sprite2D.new()
 	ghost.texture = tex
 	ghost.flip_h = sprite.flip_h
-	ghost.modulate = Color(1.0, 0.65, 0.25, 0.6)
+	ghost.modulate = Color(1.0, 0.65, 0.25, alpha)
 	ghost.z_index = -1
 	get_parent().add_child(ghost)
 	ghost.global_position = sprite.global_position
@@ -484,13 +592,17 @@ func _update_animation() -> void:
 		State.LEDGE_CLIMB: anim = "ledge_climb"
 	if sprite.animation != anim:
 		sprite.play(anim)
+	sprite.speed_scale = sprint_anim_scale if _sprinting else 1.0
 	sprite.position.y = _sprite_base_y + float(anim_y_offset.get(anim, 0.0))
 
 
 func _update_light() -> void:
-	var t := ember.ratio()
-	light.energy = lerpf(light_min_energy, light_max_energy, t)
-	light.texture_scale = lerpf(light_min_scale, light_max_scale, t)
+	var t := sanity.ratio()
+	var flicker := 0.0
+	if sanity.is_critical():
+		flicker = 0.12 * sin(float(Time.get_ticks_msec()) * 0.012)
+	light.energy = lerpf(light_min_energy, light_max_energy, t) + flicker + _heal_progress * 0.6
+	light.texture_scale = lerpf(light_min_scale, light_max_scale, t) * (1.0 + flicker)
 
 
 # ------------------------------------------------------- luz e respawn
@@ -507,6 +619,28 @@ func is_in_light() -> bool:
 	return light_zones > 0
 
 
+## Segurar o botão de cura: converte brasa em sanidade (mais devagar e só no chão).
+func _update_heal(delta: float, on_ground: bool) -> void:
+	var can_heal := on_ground and sanity.sanity < sanity.max_sanity and ember.energy > 0.0 \
+			and (state == State.IDLE or state == State.RUN or state == State.CROUCH)
+	if Input.is_action_pressed("heal") and can_heal:
+		_heal_progress += delta / heal_time
+		if _heal_progress >= 1.0:
+			_heal_progress = 0.0
+			var ratio := minf(ember.energy / heal_ember_cost, 1.0)
+			ember.drain(heal_ember_cost)
+			sanity.set_sanity(sanity.sanity + heal_sanity_amount * ratio)
+	else:
+		_heal_progress = 0.0
+
+
+## A sanidade cai mais devagar enquanto o herói corre ou desliza com brasa.
+func sanity_drain_multiplier() -> float:
+	if _sprinting or (state == State.SLIDE and _slide_powered):
+		return sprint_sanity_drain_multiplier
+	return 1.0
+
+
 ## Reaparece em "pos" com tudo restaurado (usado pelo checkpoint e pela zona de queda).
 func respawn_at(pos: Vector2) -> void:
 	global_position = pos
@@ -516,26 +650,36 @@ func respawn_at(pos: Vector2) -> void:
 	_dash_timer = 0.0
 	_lock_timer = 0.0
 	controls_locked = false
+	_sprinting = false
+	_heal_progress = 0.0
 	ember.refill(ember.max_energy)
 	sanity.restore()
 	camera.reset_smoothing()
 
 
-## Cria a ação "slide" caso ela não exista no Mapa de Entrada.
-## (C ou Ctrl esquerdo no teclado; L1 ou L2 no controle de PS4.)
-## Se preferir, crie a ação "slide" no Mapa de Entrada e esta função não faz nada.
-func _ensure_slide_action() -> void:
-	if InputMap.has_action("slide"):
+## Cria as ações "slide", "sprint", "heal" e "move_up" caso não existam no Mapa de Entrada.
+## Se você criar a ação no Mapa de Entrada, o seu mapeamento vale.
+func _ensure_actions() -> void:
+	_ensure_action("slide", [KEY_C, KEY_CTRL], [JOY_BUTTON_LEFT_SHOULDER], [[JOY_AXIS_TRIGGER_LEFT, 1.0]])
+	_ensure_action("sprint", [KEY_SHIFT], [], [[JOY_AXIS_TRIGGER_RIGHT, 1.0]])
+	_ensure_action("heal", [KEY_Q], [JOY_BUTTON_Y], [])
+	_ensure_action("move_up", [KEY_W, KEY_UP], [JOY_BUTTON_DPAD_UP], [[JOY_AXIS_LEFT_Y, -1.0]])
+
+
+func _ensure_action(action: StringName, keys: Array, buttons: Array, axes: Array) -> void:
+	if InputMap.has_action(action):
 		return
-	InputMap.add_action("slide", 0.2)
-	for keycode: Key in [KEY_C, KEY_CTRL]:
+	InputMap.add_action(action, 0.3)
+	for keycode in keys:
 		var key := InputEventKey.new()
-		key.physical_keycode = keycode
-		InputMap.action_add_event("slide", key)
-	var l1 := InputEventJoypadButton.new()
-	l1.button_index = JOY_BUTTON_LEFT_SHOULDER
-	InputMap.action_add_event("slide", l1)
-	var l2 := InputEventJoypadMotion.new()
-	l2.axis = JOY_AXIS_TRIGGER_LEFT
-	l2.axis_value = 1.0
-	InputMap.action_add_event("slide", l2)
+		key.physical_keycode = int(keycode) as Key
+		InputMap.action_add_event(action, key)
+	for button in buttons:
+		var pad := InputEventJoypadButton.new()
+		pad.button_index = int(button) as JoyButton
+		InputMap.action_add_event(action, pad)
+	for axis_pair in axes:
+		var motion := InputEventJoypadMotion.new()
+		motion.axis = int(axis_pair[0]) as JoyAxis
+		motion.axis_value = float(axis_pair[1])
+		InputMap.action_add_event(action, motion)

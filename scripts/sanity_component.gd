@@ -1,10 +1,12 @@
 class_name SanityComponent
 extends Node
 ## Sanidade do herói: cai fora das fontes de luz e recupera dentro delas.
-## Os estágios (0 a 3) aumentam conforme a sanidade cai; no estágio 4 ela quebrou.
+## Ao chegar no marcador crítico a sanidade para de cair e a BRASA começa a queimar;
+## quando a brasa acaba, a sanidade volta a cair até quebrar.
 
 signal changed(value: float, max_value: float)
 signal stage_changed(stage: int)
+signal critical_changed(is_critical: bool)
 signal broke
 
 @export var max_sanity := 100.0
@@ -12,13 +14,18 @@ signal broke
 @export var recover_per_second := 30.0
 ## Desligue para pausar a sanidade (ex.: durante a cena do item de luz).
 @export var enabled := true
+## Marcador do estado crítico (fração da sanidade máxima).
+@export_range(0.05, 0.9) var critical_ratio := 0.3
+## Brasa queimada por segundo no estado crítico (se o jogador não se curar).
+@export var critical_ember_per_second := 12.0
 ## Fração da sanidade em que começa cada estágio (do 1º ao 3º).
-@export var stage_thresholds: Array[float] = [0.75, 0.5, 0.25]
+@export var stage_thresholds: Array[float] = [0.75, 0.5, 0.3]
 
 var sanity := 0.0
 var stage := 0
 
 var _broken := false
+var _critical := false
 
 @onready var player: Player = get_parent() as Player
 
@@ -31,10 +38,24 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if _broken or not enabled or player == null:
 		return
+
 	if player.is_in_light():
+		_set_critical(false)
 		set_sanity(sanity + recover_per_second * delta)
+		return
+
+	var floor_value := max_sanity * critical_ratio
+	var drain := drain_per_second * player.sanity_drain_multiplier() * delta
+	if sanity > floor_value + 0.01:
+		# no escuro: cai até o marcador crítico e para
+		set_sanity(maxf(sanity - drain, floor_value))
+		_set_critical(sanity <= floor_value + 0.01)
 	else:
-		set_sanity(sanity - drain_per_second * delta)
+		# estado crítico: a brasa queima e segura a sanidade; sem brasa, ela cai
+		_set_critical(true)
+		if player.ember.drain(critical_ember_per_second * delta):
+			return
+		set_sanity(sanity - drain)
 
 
 func set_sanity(value: float) -> void:
@@ -48,11 +69,22 @@ func set_sanity(value: float) -> void:
 
 func restore() -> void:
 	_broken = false
+	_set_critical(false)
 	set_sanity(max_sanity)
 
 
 func ratio() -> float:
 	return sanity / max_sanity if max_sanity > 0.0 else 0.0
+
+
+func is_critical() -> bool:
+	return _critical
+
+
+func _set_critical(value: bool) -> void:
+	if value != _critical:
+		_critical = value
+		critical_changed.emit(_critical)
 
 
 func _update_stage() -> void:

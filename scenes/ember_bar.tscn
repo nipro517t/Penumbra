@@ -38,3 +38,10 @@ theme_override_styles/background = SubResource("StyleBoxFlat_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_sanity")
 value = 100.0
 show_percentage = false
+
+[node name="CriticalMarker" type="ColorRect" parent="SanityBar"]
+offset_left = 0.0
+offset_top = -1.0
+offset_right = 1.0
+offset_bottom = 7.0
+color = Color(1, 1, 1, 0.9)

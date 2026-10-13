@@ -33,6 +33,14 @@ func spend(amount: float) -> bool:
 	return true
 
 
+## Gasta até "amount" (usado para gasto contínuo, por segundo). Retorna false se já estava vazia.
+func drain(amount: float) -> bool:
+	if energy <= 0.0:
+		return false
+	set_energy(energy - amount)
+	return true
+
+
 func refill(amount: float) -> void:
 	set_energy(energy + amount)
 

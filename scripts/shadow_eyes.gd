@@ -10,7 +10,7 @@ void fragment() {
 	vec2 uv = UV - vec2(0.5);
 	float d = length(uv) * 1.7;
 	float v = smoothstep(0.3, 1.0, d) * intensity;
-	COLOR = vec4(0.08, 0.0, 0.02, v);
+	COLOR = vec4(0.30, 0.0, 0.04, v);
 }
 """
 ## pos = ponto na borda (0 a 1), dir = direção para dentro da tela, stage = estágio em que aparece.
@@ -51,7 +51,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_time += delta
 	var ratio := _sanity.ratio() if _sanity else 1.0
-	_vignette_mat.set_shader_parameter("intensity", clampf(1.0 - ratio, 0.0, 1.0) * 0.85)
+	# sutil: o escuro vem da luz do herói se apagando; a vinheta só avermelha as bordas
+	var intensity := clampf(1.0 - ratio, 0.0, 1.0) * 0.3
+	if _sanity and _sanity.is_critical():
+		intensity += 0.15 * (0.5 + 0.5 * sin(_time * 9.0))
+	_vignette_mat.set_shader_parameter("intensity", intensity)
 	if _catching:
 		return
 	for i in _creatures.size():
