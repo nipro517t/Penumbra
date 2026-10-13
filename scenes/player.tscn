@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="script_player"]
 [ext_resource type="Script" path="res://scripts/ember_component.gd" id="script_ember"]
+[ext_resource type="Script" path="res://scripts/sanity_component.gd" id="script_sanity"]
 [ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-00.png" id="tex_idle_0"]
 [ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-01.png" id="tex_idle_1"]
 [ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-02.png" id="tex_idle_2"]
@@ -30,6 +31,15 @@
 [ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-01.png" id="tex_dash_1"]
 [ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-02.png" id="tex_dash_2"]
 [ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-03.png" id="tex_dash_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-00.png" id="tex_ledge_grb_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-01.png" id="tex_ledge_grb_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-02.png" id="tex_ledge_grb_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-03.png" id="tex_ledge_grb_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-00.png" id="tex_ledge_clmb_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-01.png" id="tex_ledge_clmb_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-02.png" id="tex_ledge_clmb_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-03.png" id="tex_ledge_clmb_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-04.png" id="tex_ledge_clmb_4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 resource_local_to_scene = true
@@ -173,6 +183,43 @@ animations = [{
 "loop": false,
 "name": &"dash",
 "speed": 25.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_3")
+}],
+"loop": true,
+"name": &"ledge_hang",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_4")
+}],
+"loop": false,
+"name": &"ledge_climb",
+"speed": 12.5
 }]
 
 [node name="Player" type="CharacterBody2D" groups=["player"]]
@@ -198,3 +245,6 @@ texture_scale = 0.75
 
 [node name="Ember" type="Node" parent="."]
 script = ExtResource("script_ember")
+
+[node name="Sanity" type="Node" parent="."]
+script = ExtResource("script_sanity")

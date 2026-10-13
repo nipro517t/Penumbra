@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/shadow_eyes.gd" id="script_eyes"]
+
+[node name="ShadowEyes" type="CanvasLayer"]
+layer = 10
+script = ExtResource("script_eyes")

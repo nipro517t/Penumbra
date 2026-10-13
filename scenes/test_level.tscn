@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://scenes/light_source.tscn" id="light_scene"]
 [ext_resource type="Script" path="res://scripts/kill_zone.gd" id="script_kill"]
+[ext_resource type="Script" path="res://scripts/voice_trigger.gd" id="script_voice"]
 
 [sub_resource type="RectangleShape2D" id="Rect_0"]
 size = Vector2(800, 60)
@@ -29,6 +30,12 @@ size = Vector2(140, 20)
 
 [sub_resource type="RectangleShape2D" id="Rect_kill"]
 size = Vector2(4000, 40)
+
+[sub_resource type="RectangleShape2D" id="Rect_ledge"]
+size = Vector2(50, 40)
+
+[sub_resource type="RectangleShape2D" id="Rect_voice"]
+size = Vector2(16, 100)
 
 [node name="TestLevel" type="Node2D"]
 
@@ -161,3 +168,24 @@ respawn_point = NodePath("../PlayerStart")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
 shape = SubResource("Rect_kill")
+
+[node name="LedgePlatform" type="StaticBody2D" parent="."]
+position = Vector2(435, 140)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LedgePlatform"]
+shape = SubResource("Rect_ledge")
+
+[node name="Visual" type="ColorRect" parent="LedgePlatform"]
+offset_left = -25.0
+offset_top = -20.0
+offset_right = 25.0
+offset_bottom = 20.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="VoiceTrigger1" type="Area2D" parent="."]
+position = Vector2(255, 150)
+script = ExtResource("script_voice")
+lines = Array[String](["(fala da voz: edite no Inspetor)"])
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VoiceTrigger1"]
+shape = SubResource("Rect_voice")

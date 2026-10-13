@@ -6,8 +6,8 @@ Tema: **Luz e Sombra**. Projeto de Game Jam (protótipo em andamento).
 ## A ideia
 Um herói ágil atravessa um mundo consumido pela escuridão. A luz é refúgio e recurso:
 - **Brasa:** barra de energia que alimenta o dash; recarrega nas fontes de luz.
-- **Sanidade (planejado):** cai fora da luz; criaturas de olhos vermelhos surgem nas bordas da tela e, ao zerar, "pegam" o herói e ele volta ao último checkpoint.
-- **Voz em vermelho (planejado):** texto que fala com o jogador em pontos específicos.
+- **Sanidade:** cai fora da luz; criaturas de olhos vermelhos surgem nas bordas da tela e, ao zerar, "pegam" o herói e ele volta ao último checkpoint.
+- **Voz em vermelho:** texto que fala com o jogador em pontos específicos.
 - **Twist (em estudo):** a escuridão é uma reação ao que a humanidade fez ao mundo; a crítica final é que *foi ela mesma* que se destruiu.
 
 ## Como rodar
@@ -33,13 +33,20 @@ scenes/
   player.tscn        herói (CharacterBody2D, sprite, câmera, luz, Ember)
   test_level.tscn    fase de teste (túnel baixo, poço, poço com paredes, luzes)
   light_source.tscn  fonte de luz (recarrega a brasa)
-  ember_bar.tscn     barra de brasa na tela
+  ember_bar.tscn     barras de teste na tela (brasa e sanidade)
+  shadow_eyes.tscn   criaturas de olhos vermelhos nas bordas + vinheta + "pegada"
+  voice_box.tscn     caixa de voz em vermelho
 scripts/
   player.gd          movimento e estados
   ember_component.gd barra de brasa
   light_source.gd    recarga de brasa nas luzes
   kill_zone.gd       queda no vazio: volta ao início
-  ember_bar.gd       atualiza a barra na tela
+  ember_bar.gd       atualiza as barras na tela
+  sanity_component.gd sanidade (cai fora da luz, estágios, sinal broke)
+  game_state.gd      Autoload: checkpoint, flags, finais e save em disco
+  shadow_eyes.gd     criaturas nas bordas e sequência de "pegada" + respawn
+  voice_box.gd       falas em vermelho digitadas, uma por vez
+  voice_trigger.gd   área que dispara falas (edite "lines" no Inspetor)
 assets/player/adventurer/   frames do herói (arte provisória)
 ```
 
@@ -48,6 +55,10 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - **Dash:** gasta brasa (`dash_ember_cost`), tem cooldown e rastro. No chão vira um deslize com colisão baixa (`dash_slides_on_ground`). Pular durante o dash cancela o dash e mantém o impulso.
 - **Slide:** botão próprio (ação `slide`, criada por código se não existir no Mapa de Entrada). Seta para baixo só agacha.
 - **Brasa:** `EmberComponent` (`spend`, `refill`, sinal `changed`). Não drena sozinha (`draining` desligado); a pressão virá da sanidade.
+- **Quinas:** no ar, segurando em direção a uma parede cujo topo está na altura da cabeça, o herói se pendura (`LEDGE_HANG`). **Pular** sobe (`LEDGE_CLIMB`); **agachar** ou segurar para longe solta. Ajustes no grupo *Quina* do Inspetor.
+- **Sanidade:** `SanityComponent` no `Player`. Cai fora das fontes de luz e recupera dentro (`drain_per_second`, `recover_per_second`). Estágios 1 a 3 mostram criaturas nas bordas; ao zerar, elas "pulam", a tela escurece e o herói volta ao último checkpoint (`GameState`).
+- **Checkpoint:** cada `LightSource` é checkpoint ao ser tocada. A zona de queda também usa o checkpoint.
+- **Voz em vermelho:** `VoiceTrigger` (Area2D) dispara as falas escritas no Inspetor; `GameState.say("...")` fala por código. As falas atuais são só marcadores.
 - **Luz:** `CanvasModulate` escurece a fase; `PointLight2D` no herói (tamanho segue a brasa) e nas fontes de luz.
 - **Pés alinhados:** `anim_y_offset` ajusta a altura do sprite por animação (queda +4, wall slide +2).
 - **Arte do herói e tileset são provisórios** e serão substituídos por arte própria.
@@ -64,15 +75,15 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - [x] Animações do herói montadas (idle, run, jump, fall, wall slide, crouch, slide, dash)
 - [x] Brasa + barra na tela + fonte de luz que recarrega
 - [x] Fase de teste com túnel, poço de dash, poço com paredes e zona de queda
-- [x] GDD (rascunho v6) e este README
+- [x] GDD e este README
+- [x] Agarrar e escalar quinas (a testar)
+- [x] Sanidade, criaturas nas bordas, checkpoint e respawn (a testar)
+- [x] Caixa de voz em vermelho e gatilhos de fala (a testar)
+- [x] `GameState` (Autoload) com flags, finais e save em disco
 
 ### A fazer (ordem sugerida)
-- [ ] Testar e ajustar o "feeling" do movimento e do dash (valores no Inspetor)
-- [ ] Agarrar e escalar quinas (animações `crnr-grb` e `crnr-clmb` já existem)
-- [ ] **Sanidade:** `sanity_component.gd`, drenagem fora da luz, recuperação na luz
-- [ ] **Criaturas nas bordas** (`ShadowEyes`, CanvasLayer) e "pulo" ao zerar a sanidade
-- [ ] **Checkpoint e respawn:** `GameState` (Autoload) com o último checkpoint (fonte de luz)
-- [ ] **Voz em vermelho:** `VoiceBox` + gatilhos por área e por faixa de sanidade
+- [ ] Testar e ajustar o "feeling" do movimento, do dash, das quinas e da sanidade (valores no Inspetor)
+- [ ] Escrever as falas da voz (hoje são marcadores) e ligar falas aos estágios de sanidade
 - [ ] Combate: combo de 3 golpes, ataque aéreo, hitbox/hurtbox
 - [ ] Inimigos (tipos a definir)
 - [ ] Nível do Capítulo 1 (3 a 4 trechos) com tileset

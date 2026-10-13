@@ -1,5 +1,5 @@
 extends Area2D
-## Zona de queda: devolve o jogador ao ponto de início e enche a brasa.
+## Zona de queda: devolve o herói ao último checkpoint (ou ao ponto inicial).
 
 @export var respawn_point: Marker2D
 
@@ -10,8 +10,9 @@ func _ready() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	var player := body as Player
-	if player == null or respawn_point == null:
+	if player == null:
 		return
-	player.global_position = respawn_point.global_position
-	player.velocity = Vector2.ZERO
-	player.ember.refill(player.ember.max_energy)
+	if GameState.has_checkpoint():
+		GameState.respawn(player)
+	elif respawn_point:
+		player.respawn_at(respawn_point.global_position)
