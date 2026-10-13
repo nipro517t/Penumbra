@@ -1,15 +1,200 @@
 [gd_scene format=3 uid="uid://b04kxyduir331"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xrivr"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="script_player"]
+[ext_resource type="Script" path="res://scripts/ember_component.gd" id="script_ember"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-00.png" id="tex_idle_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-01.png" id="tex_idle_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-02.png" id="tex_idle_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-03.png" id="tex_idle_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-00.png" id="tex_run_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-01.png" id="tex_run_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-02.png" id="tex_run_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-03.png" id="tex_run_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-04.png" id="tex_run_4"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-05.png" id="tex_run_5"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-00.png" id="tex_jump_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-01.png" id="tex_jump_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-02.png" id="tex_jump_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-03.png" id="tex_jump_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-fall-00.png" id="tex_fall_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-fall-01.png" id="tex_fall_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-wall-slide-00.png" id="tex_wall_slide_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-wall-slide-01.png" id="tex_wall_slide_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-00.png" id="tex_crouch_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-01.png" id="tex_crouch_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-02.png" id="tex_crouch_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-03.png" id="tex_crouch_3"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-slide-00.png" id="tex_slide_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-slide-01.png" id="tex_slide_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-00.png" id="tex_dash_0"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-01.png" id="tex_dash_1"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-02.png" id="tex_dash_2"]
+[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-03.png" id="tex_dash_3"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_13qdw"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
+resource_local_to_scene = true
+radius = 6.0
+height = 28.0
 
-[node name="Player" type="CharacterBody2D" unique_id=328592650]
+[sub_resource type="Gradient" id="Gradient_light"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=396908984]
-shape = SubResource("CapsuleShape2D_xrivr")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1563845024]
-sprite_frames = SubResource("SpriteFrames_13qdw")
+[sub_resource type="SpriteFrames" id="SpriteFrames_player"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_idle_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_idle_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_idle_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_idle_3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_run_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_run_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_run_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_run_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_run_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_run_5")
+}],
+"loop": true,
+"name": &"run",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_jump_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_jump_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_jump_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_jump_3")
+}],
+"loop": false,
+"name": &"jump",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_fall_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_fall_1")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_wall_slide_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_wall_slide_1")
+}],
+"loop": true,
+"name": &"wall_slide",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_3")
+}],
+"loop": true,
+"name": &"crouch",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_slide_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_slide_1")
+}],
+"loop": true,
+"name": &"slide",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_dash_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_dash_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_dash_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_dash_3")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 25.0
+}]
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=551149970]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+script = ExtResource("script_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -3)
+sprite_frames = SubResource("SpriteFrames_player")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+color = Color(1, 0.72, 0.38, 1)
+texture = SubResource("GradientTexture2D_light")
+texture_scale = 0.75
+
+[node name="Ember" type="Node" parent="."]
+script = ExtResource("script_ember")

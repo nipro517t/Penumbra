@@ -1,0 +1,163 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/light_source.tscn" id="light_scene"]
+[ext_resource type="Script" path="res://scripts/kill_zone.gd" id="script_kill"]
+
+[sub_resource type="RectangleShape2D" id="Rect_0"]
+size = Vector2(800, 60)
+
+[sub_resource type="RectangleShape2D" id="Rect_1"]
+size = Vector2(50, 20)
+
+[sub_resource type="RectangleShape2D" id="Rect_2"]
+size = Vector2(50, 20)
+
+[sub_resource type="RectangleShape2D" id="Rect_3"]
+size = Vector2(90, 136)
+
+[sub_resource type="RectangleShape2D" id="Rect_4"]
+size = Vector2(490, 60)
+
+[sub_resource type="RectangleShape2D" id="Rect_5"]
+size = Vector2(16, 100)
+
+[sub_resource type="RectangleShape2D" id="Rect_6"]
+size = Vector2(16, 140)
+
+[sub_resource type="RectangleShape2D" id="Rect_7"]
+size = Vector2(140, 20)
+
+[sub_resource type="RectangleShape2D" id="Rect_kill"]
+size = Vector2(4000, 40)
+
+[node name="TestLevel" type="Node2D"]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.2, 0.2, 0.3, 1)
+
+[node name="PlayerStart" type="Marker2D" parent="."]
+position = Vector2(-60, 186)
+
+[node name="GroundA" type="StaticBody2D" parent="."]
+position = Vector2(100.0, 230.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GroundA"]
+shape = SubResource("Rect_0")
+
+[node name="Visual" type="ColorRect" parent="GroundA"]
+offset_left = -400.0
+offset_top = -30.0
+offset_right = 400.0
+offset_bottom = 30.0
+color = Color(0.34, 0.27, 0.2, 1)
+
+[node name="Step1" type="StaticBody2D" parent="."]
+position = Vector2(135.0, 175.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Step1"]
+shape = SubResource("Rect_1")
+
+[node name="Visual" type="ColorRect" parent="Step1"]
+offset_left = -25.0
+offset_top = -10.0
+offset_right = 25.0
+offset_bottom = 10.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="Step2" type="StaticBody2D" parent="."]
+position = Vector2(195.0, 140.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Step2"]
+shape = SubResource("Rect_2")
+
+[node name="Visual" type="ColorRect" parent="Step2"]
+offset_left = -25.0
+offset_top = -10.0
+offset_right = 25.0
+offset_bottom = 10.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="TunnelBlock" type="StaticBody2D" parent="."]
+position = Vector2(345.0, 108.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TunnelBlock"]
+shape = SubResource("Rect_3")
+
+[node name="Visual" type="ColorRect" parent="TunnelBlock"]
+offset_left = -45.0
+offset_top = -68.0
+offset_right = 45.0
+offset_bottom = 68.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="GroundB" type="StaticBody2D" parent="."]
+position = Vector2(855.0, 230.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GroundB"]
+shape = SubResource("Rect_4")
+
+[node name="Visual" type="ColorRect" parent="GroundB"]
+offset_left = -245.0
+offset_top = -30.0
+offset_right = 245.0
+offset_bottom = 30.0
+color = Color(0.34, 0.27, 0.2, 1)
+
+[node name="ShaftWallLeft" type="StaticBody2D" parent="."]
+position = Vector2(708.0, 110.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShaftWallLeft"]
+shape = SubResource("Rect_5")
+
+[node name="Visual" type="ColorRect" parent="ShaftWallLeft"]
+offset_left = -8.0
+offset_top = -50.0
+offset_right = 8.0
+offset_bottom = 50.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="ShaftWallRight" type="StaticBody2D" parent="."]
+position = Vector2(772.0, 130.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShaftWallRight"]
+shape = SubResource("Rect_6")
+
+[node name="Visual" type="ColorRect" parent="ShaftWallRight"]
+offset_left = -8.0
+offset_top = -70.0
+offset_right = 8.0
+offset_bottom = 70.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="TopSlab" type="StaticBody2D" parent="."]
+position = Vector2(850.0, 70.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TopSlab"]
+shape = SubResource("Rect_7")
+
+[node name="Visual" type="ColorRect" parent="TopSlab"]
+offset_left = -70.0
+offset_top = -10.0
+offset_right = 70.0
+offset_bottom = 10.0
+color = Color(0.3, 0.26, 0.28, 1)
+
+[node name="LightSource1" parent="." instance=ExtResource("light_scene")]
+position = Vector2(40, 200)
+
+[node name="LightSource2" parent="." instance=ExtResource("light_scene")]
+position = Vector2(450, 200)
+
+[node name="LightSource3" parent="." instance=ExtResource("light_scene")]
+position = Vector2(740, 200)
+
+[node name="LightSource4" parent="." instance=ExtResource("light_scene")]
+position = Vector2(850, 60)
+
+[node name="KillZone" type="Area2D" parent="."]
+position = Vector2(400, 420)
+script = ExtResource("script_kill")
+respawn_point = NodePath("../PlayerStart")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone"]
+shape = SubResource("Rect_kill")
