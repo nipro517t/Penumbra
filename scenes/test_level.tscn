@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/light_source.tscn" id="light_scene"]
 [ext_resource type="Script" path="res://scripts/kill_zone.gd" id="script_kill"]
 [ext_resource type="Script" path="res://scripts/voice_trigger.gd" id="script_voice"]
+[ext_resource type="PackedScene" path="res://scenes/enemy_shadow.tscn" id="enemy_scene"]
 
 [sub_resource type="RectangleShape2D" id="Rect_0"]
 size = Vector2(800, 60)
@@ -37,10 +38,40 @@ size = Vector2(50, 40)
 [sub_resource type="RectangleShape2D" id="Rect_voice"]
 size = Vector2(16, 100)
 
+[sub_resource type="OccluderPolygon2D" id="Occ_GroundA"]
+polygon = PackedVector2Array(-398.0, -24.0, 398.0, -24.0, 398.0, 28.0, -398.0, 28.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_Step1"]
+polygon = PackedVector2Array(-23.0, -4.0, 23.0, -4.0, 23.0, 8.0, -23.0, 8.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_Step2"]
+polygon = PackedVector2Array(-23.0, -4.0, 23.0, -4.0, 23.0, 8.0, -23.0, 8.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_TunnelBlock"]
+polygon = PackedVector2Array(-43.0, -62.0, 43.0, -62.0, 43.0, 66.0, -43.0, 66.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_GroundB"]
+polygon = PackedVector2Array(-243.0, -24.0, 243.0, -24.0, 243.0, 28.0, -243.0, 28.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ShaftWallLeft"]
+polygon = PackedVector2Array(-6.0, -44.0, 6.0, -44.0, 6.0, 48.0, -6.0, 48.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ShaftWallRight"]
+polygon = PackedVector2Array(-6.0, -64.0, 6.0, -64.0, 6.0, 68.0, -6.0, 68.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_TopSlab"]
+polygon = PackedVector2Array(-68.0, -4.0, 68.0, -4.0, 68.0, 8.0, -68.0, 8.0)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_LedgePlatform"]
+polygon = PackedVector2Array(-23.0, -14.0, 23.0, -14.0, 23.0, 18.0, -23.0, 18.0)
+
+[sub_resource type="CanvasItemMaterial" id="Mat_unshaded"]
+light_mode = 1
+
 [node name="TestLevel" type="Node2D"]
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color(0.2, 0.2, 0.3, 1)
+color = Color(0.3, 0.3, 0.42, 1)
 
 [node name="PlayerStart" type="Marker2D" parent="."]
 position = Vector2(-60, 186)
@@ -56,7 +87,7 @@ offset_left = -400.0
 offset_top = -30.0
 offset_right = 400.0
 offset_bottom = 30.0
-color = Color(0.34, 0.27, 0.2, 1)
+color = Color(0.578, 0.459, 0.340, 1)
 
 [node name="Step1" type="StaticBody2D" parent="."]
 position = Vector2(135.0, 175.0)
@@ -69,7 +100,7 @@ offset_left = -25.0
 offset_top = -10.0
 offset_right = 25.0
 offset_bottom = 10.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="Step2" type="StaticBody2D" parent="."]
 position = Vector2(195.0, 140.0)
@@ -82,7 +113,7 @@ offset_left = -25.0
 offset_top = -10.0
 offset_right = 25.0
 offset_bottom = 10.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="TunnelBlock" type="StaticBody2D" parent="."]
 position = Vector2(345.0, 108.0)
@@ -95,7 +126,7 @@ offset_left = -45.0
 offset_top = -68.0
 offset_right = 45.0
 offset_bottom = 68.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="GroundB" type="StaticBody2D" parent="."]
 position = Vector2(855.0, 230.0)
@@ -108,7 +139,7 @@ offset_left = -245.0
 offset_top = -30.0
 offset_right = 245.0
 offset_bottom = 30.0
-color = Color(0.34, 0.27, 0.2, 1)
+color = Color(0.578, 0.459, 0.340, 1)
 
 [node name="ShaftWallLeft" type="StaticBody2D" parent="."]
 position = Vector2(708.0, 110.0)
@@ -121,7 +152,7 @@ offset_left = -8.0
 offset_top = -50.0
 offset_right = 8.0
 offset_bottom = 50.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="ShaftWallRight" type="StaticBody2D" parent="."]
 position = Vector2(772.0, 130.0)
@@ -134,7 +165,7 @@ offset_left = -8.0
 offset_top = -70.0
 offset_right = 8.0
 offset_bottom = 70.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="TopSlab" type="StaticBody2D" parent="."]
 position = Vector2(850.0, 70.0)
@@ -147,7 +178,7 @@ offset_left = -70.0
 offset_top = -10.0
 offset_right = 70.0
 offset_bottom = 10.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="LightSource1" parent="." instance=ExtResource("light_scene")]
 position = Vector2(40, 200)
@@ -180,7 +211,7 @@ offset_left = -25.0
 offset_top = -20.0
 offset_right = 25.0
 offset_bottom = 20.0
-color = Color(0.3, 0.26, 0.28, 1)
+color = Color(0.510, 0.442, 0.476, 1)
 
 [node name="VoiceTrigger1" type="Area2D" parent="."]
 position = Vector2(255, 150)
@@ -189,3 +220,108 @@ lines = Array[String](["(fala da voz: edite no Inspetor)"])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="VoiceTrigger1"]
 shape = SubResource("Rect_voice")
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundA"]
+occluder = SubResource("Occ_GroundA")
+
+[node name="Occluder" type="LightOccluder2D" parent="Step1"]
+occluder = SubResource("Occ_Step1")
+
+[node name="Occluder" type="LightOccluder2D" parent="Step2"]
+occluder = SubResource("Occ_Step2")
+
+[node name="Occluder" type="LightOccluder2D" parent="TunnelBlock"]
+occluder = SubResource("Occ_TunnelBlock")
+
+[node name="Occluder" type="LightOccluder2D" parent="GroundB"]
+occluder = SubResource("Occ_GroundB")
+
+[node name="Occluder" type="LightOccluder2D" parent="ShaftWallLeft"]
+occluder = SubResource("Occ_ShaftWallLeft")
+
+[node name="Occluder" type="LightOccluder2D" parent="ShaftWallRight"]
+occluder = SubResource("Occ_ShaftWallRight")
+
+[node name="Occluder" type="LightOccluder2D" parent="TopSlab"]
+occluder = SubResource("Occ_TopSlab")
+
+[node name="Occluder" type="LightOccluder2D" parent="LedgePlatform"]
+occluder = SubResource("Occ_LedgePlatform")
+
+[node name="Edge" type="ColorRect" parent="GroundA"]
+material = SubResource("Mat_unshaded")
+offset_left = -400.0
+offset_top = -30.0
+offset_right = 400.0
+offset_bottom = -28.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="Step1"]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -10.0
+offset_right = 25.0
+offset_bottom = -8.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="Step2"]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -10.0
+offset_right = 25.0
+offset_bottom = -8.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="TunnelBlock"]
+material = SubResource("Mat_unshaded")
+offset_left = -45.0
+offset_top = -68.0
+offset_right = 45.0
+offset_bottom = -66.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="GroundB"]
+material = SubResource("Mat_unshaded")
+offset_left = -245.0
+offset_top = -30.0
+offset_right = 245.0
+offset_bottom = -28.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="ShaftWallLeft"]
+material = SubResource("Mat_unshaded")
+offset_left = -8.0
+offset_top = -50.0
+offset_right = 8.0
+offset_bottom = -48.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="ShaftWallRight"]
+material = SubResource("Mat_unshaded")
+offset_left = -8.0
+offset_top = -70.0
+offset_right = 8.0
+offset_bottom = -68.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="TopSlab"]
+material = SubResource("Mat_unshaded")
+offset_left = -70.0
+offset_top = -10.0
+offset_right = 70.0
+offset_bottom = -8.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Edge" type="ColorRect" parent="LedgePlatform"]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -20.0
+offset_right = 25.0
+offset_bottom = -18.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Enemy1" parent="." instance=ExtResource("enemy_scene")]
+position = Vector2(470, 192)
+
+[node name="Enemy2" parent="." instance=ExtResource("enemy_scene")]
+position = Vector2(950, 192)

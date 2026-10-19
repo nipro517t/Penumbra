@@ -1,20 +1,20 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://clgyf24rvp5yt"]
 
 [ext_resource type="PackedScene" path="res://scenes/test_level.tscn" id="1_level"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://b04kxyduir331" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/ember_bar.tscn" id="3_bar"]
 [ext_resource type="PackedScene" path="res://scenes/shadow_eyes.tscn" id="4_eyes"]
 [ext_resource type="PackedScene" path="res://scenes/voice_box.tscn" id="5_voice"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=709807163]
 
-[node name="Level" parent="." instance=ExtResource("1_level")]
+[node name="Level" parent="." unique_id=631999620 instance=ExtResource("1_level")]
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(-60, 186)
+[node name="Player" parent="." unique_id=1773698110 instance=ExtResource("2_player")]
+position = Vector2(-62, 186)
 
-[node name="EmberBar" parent="." instance=ExtResource("3_bar")]
+[node name="EmberBar" parent="." unique_id=724199278 instance=ExtResource("3_bar")]
 
-[node name="ShadowEyes" parent="." instance=ExtResource("4_eyes")]
+[node name="ShadowEyes" parent="." unique_id=41604600 instance=ExtResource("4_eyes")]
 
-[node name="VoiceBox" parent="." instance=ExtResource("5_voice")]
+[node name="VoiceBox" parent="." unique_id=317112000 instance=ExtResource("5_voice")]

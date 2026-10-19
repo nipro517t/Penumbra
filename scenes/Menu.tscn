@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://do54udxlvlf81"]
+
+[ext_resource type="Script" uid="uid://dfljsk5a7rtn4" path="res://scripts/menu_buttons.gd" id="1_xdvgc"]
+
+[node name="Control" type="Control" unique_id=689389324]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1674301789]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 6
+
+[node name="Label" type="Label" parent="MarginContainer" unique_id=2056587980]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Penumbra"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1345098645]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_constants/separation = 12
+script = ExtResource("1_xdvgc")
+focus_color = Color(0.95686275, 1, 0, 1)
+
+[node name="BtnJogar" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1475037124]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 12
+text = "Jogar"
+
+[node name="BtnConfig" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1678950329]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 12
+text = "Configurações"
+
+[node name="BtnCreditos" type="Button" parent="MarginContainer/VBoxContainer" unique_id=2047477589]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 12
+text = "Créditos"
+
+[node name="BtnQuit" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1939664295]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 12
+text = "Sair"

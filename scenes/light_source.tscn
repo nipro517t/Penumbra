@@ -1,12 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c3txq3mxrodx3"]
 
-[ext_resource type="Script" path="res://scripts/light_source.gd" id="script_light"]
+[ext_resource type="Script" uid="uid://bawm3oyiygkct" path="res://scripts/light_source.gd" id="script_light"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_light"]
-radius = 26.0
+radius = 95.0
 
 [sub_resource type="Gradient" id="Gradient_src"]
-offsets = PackedFloat32Array(0, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_src"]
@@ -17,28 +16,27 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[node name="LightSource" type="Area2D"]
+[node name="LightSource" type="Area2D" unique_id=1197410745]
 script = ExtResource("script_light")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1319990233]
 position = Vector2(0, -14)
 shape = SubResource("CircleShape2D_light")
 
-[node name="Post" type="ColorRect" parent="."]
+[node name="Post" type="ColorRect" parent="." unique_id=795201302]
 offset_left = -1.0
 offset_top = -18.0
 offset_right = 1.0
-offset_bottom = 0.0
 color = Color(0.2, 0.17, 0.15, 1)
 
-[node name="Bulb" type="ColorRect" parent="."]
+[node name="Bulb" type="ColorRect" parent="." unique_id=261433261]
 offset_left = -2.0
 offset_top = -22.0
 offset_right = 2.0
 offset_bottom = -18.0
 color = Color(1, 0.85, 0.5, 1)
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=1211008884]
 position = Vector2(0, -20)
 color = Color(1, 0.78, 0.45, 1)
 energy = 1.3

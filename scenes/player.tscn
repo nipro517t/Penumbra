@@ -1,65 +1,98 @@
 [gd_scene format=3 uid="uid://b04kxyduir331"]
 
-[ext_resource type="Script" path="res://scripts/player.gd" id="script_player"]
-[ext_resource type="Script" path="res://scripts/ember_component.gd" id="script_ember"]
-[ext_resource type="Script" path="res://scripts/sanity_component.gd" id="script_sanity"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-00.png" id="tex_idle_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-01.png" id="tex_idle_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-02.png" id="tex_idle_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-idle-03.png" id="tex_idle_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-00.png" id="tex_run_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-01.png" id="tex_run_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-02.png" id="tex_run_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-03.png" id="tex_run_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-04.png" id="tex_run_4"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-run-05.png" id="tex_run_5"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-00.png" id="tex_jump_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-01.png" id="tex_jump_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-02.png" id="tex_jump_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-jump-03.png" id="tex_jump_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-fall-00.png" id="tex_fall_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-fall-01.png" id="tex_fall_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-wall-slide-00.png" id="tex_wall_slide_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-wall-slide-01.png" id="tex_wall_slide_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-00.png" id="tex_crouch_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-01.png" id="tex_crouch_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-02.png" id="tex_crouch_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crouch-03.png" id="tex_crouch_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-slide-00.png" id="tex_slide_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-slide-01.png" id="tex_slide_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-00.png" id="tex_dash_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-01.png" id="tex_dash_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-02.png" id="tex_dash_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-smrslt-03.png" id="tex_dash_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-00.png" id="tex_ledge_grb_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-01.png" id="tex_ledge_grb_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-02.png" id="tex_ledge_grb_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-grb-03.png" id="tex_ledge_grb_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-00.png" id="tex_ledge_clmb_0"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-01.png" id="tex_ledge_clmb_1"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-02.png" id="tex_ledge_clmb_2"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-03.png" id="tex_ledge_clmb_3"]
-[ext_resource type="Texture2D" path="res://assets/player/adventurer/adventurer-crnr-clmb-04.png" id="tex_ledge_clmb_4"]
+[ext_resource type="Script" uid="uid://xxi7eu65k6m1" path="res://scripts/ember_component.gd" id="script_ember"]
+[ext_resource type="Script" uid="uid://cbk8arhmjrtj0" path="res://scripts/player.gd" id="script_player"]
+[ext_resource type="Script" uid="uid://dy8yger5r633k" path="res://scripts/sanity_component.gd" id="script_sanity"]
+[ext_resource type="Texture2D" uid="uid://erwsttx5ujb1" path="res://assets/player/adventurer/adventurer-crouch-00.png" id="tex_crouch_0"]
+[ext_resource type="Texture2D" uid="uid://dwocmn87jy1vd" path="res://assets/player/adventurer/adventurer-crouch-01.png" id="tex_crouch_1"]
+[ext_resource type="Texture2D" uid="uid://ciknarqbolwlf" path="res://assets/player/adventurer/adventurer-crouch-02.png" id="tex_crouch_2"]
+[ext_resource type="Texture2D" uid="uid://bpaaeknc3t7sv" path="res://assets/player/adventurer/adventurer-crouch-03.png" id="tex_crouch_3"]
+[ext_resource type="Texture2D" uid="uid://xnqfeylq1i7w" path="res://assets/player/adventurer/adventurer-smrslt-00.png" id="tex_dash_0"]
+[ext_resource type="Texture2D" uid="uid://5s7w15wg3ujm" path="res://assets/player/adventurer/adventurer-smrslt-01.png" id="tex_dash_1"]
+[ext_resource type="Texture2D" uid="uid://grgwnoa8namn" path="res://assets/player/adventurer/adventurer-smrslt-02.png" id="tex_dash_2"]
+[ext_resource type="Texture2D" uid="uid://o7t15jdwcrmo" path="res://assets/player/adventurer/adventurer-smrslt-03.png" id="tex_dash_3"]
+[ext_resource type="Texture2D" uid="uid://dwqtw7iih4qt6" path="res://assets/player/adventurer/adventurer-fall-00.png" id="tex_fall_0"]
+[ext_resource type="Texture2D" uid="uid://8d4o11asllws" path="res://assets/player/adventurer/adventurer-fall-01.png" id="tex_fall_1"]
+[ext_resource type="Texture2D" uid="uid://b88xh0xeckm2w" path="res://assets/player/adventurer/adventurer-idle-00.png" id="tex_idle_0"]
+[ext_resource type="Texture2D" uid="uid://d0ojbkwxj4nfu" path="res://assets/player/adventurer/adventurer-idle-01.png" id="tex_idle_1"]
+[ext_resource type="Texture2D" uid="uid://ce7vayks5spf6" path="res://assets/player/adventurer/adventurer-idle-02.png" id="tex_idle_2"]
+[ext_resource type="Texture2D" uid="uid://cgf64bbspxbb3" path="res://assets/player/adventurer/adventurer-idle-03.png" id="tex_idle_3"]
+[ext_resource type="Texture2D" uid="uid://dbc8cn0jmv15q" path="res://assets/player/adventurer/adventurer-jump-00.png" id="tex_jump_0"]
+[ext_resource type="Texture2D" uid="uid://vag0harf85cx" path="res://assets/player/adventurer/adventurer-jump-01.png" id="tex_jump_1"]
+[ext_resource type="Texture2D" uid="uid://by51rhlt3y46i" path="res://assets/player/adventurer/adventurer-jump-02.png" id="tex_jump_2"]
+[ext_resource type="Texture2D" uid="uid://bo6ojqrnn0wiq" path="res://assets/player/adventurer/adventurer-jump-03.png" id="tex_jump_3"]
+[ext_resource type="Texture2D" uid="uid://iqnxqx3rua1t" path="res://assets/player/adventurer/adventurer-crnr-clmb-00.png" id="tex_ledge_clmb_0"]
+[ext_resource type="Texture2D" uid="uid://dbjc6tftppesu" path="res://assets/player/adventurer/adventurer-crnr-clmb-01.png" id="tex_ledge_clmb_1"]
+[ext_resource type="Texture2D" uid="uid://v7qifcuhy3rk" path="res://assets/player/adventurer/adventurer-crnr-clmb-02.png" id="tex_ledge_clmb_2"]
+[ext_resource type="Texture2D" uid="uid://df6bxfjdw3kex" path="res://assets/player/adventurer/adventurer-crnr-clmb-03.png" id="tex_ledge_clmb_3"]
+[ext_resource type="Texture2D" uid="uid://dedcvbcg7wrty" path="res://assets/player/adventurer/adventurer-crnr-clmb-04.png" id="tex_ledge_clmb_4"]
+[ext_resource type="Texture2D" uid="uid://4hj6kv1r6a4u" path="res://assets/player/adventurer/adventurer-crnr-grb-00.png" id="tex_ledge_grb_0"]
+[ext_resource type="Texture2D" uid="uid://ro8drkdqm5w0" path="res://assets/player/adventurer/adventurer-crnr-grb-01.png" id="tex_ledge_grb_1"]
+[ext_resource type="Texture2D" uid="uid://dd4msug7vrovp" path="res://assets/player/adventurer/adventurer-crnr-grb-02.png" id="tex_ledge_grb_2"]
+[ext_resource type="Texture2D" uid="uid://b4hbkkvjf5sf2" path="res://assets/player/adventurer/adventurer-crnr-grb-03.png" id="tex_ledge_grb_3"]
+[ext_resource type="Texture2D" uid="uid://37y1efhxt5m2" path="res://assets/player/adventurer/adventurer-run-00.png" id="tex_run_0"]
+[ext_resource type="Texture2D" uid="uid://b3fefqlj0s3wv" path="res://assets/player/adventurer/adventurer-run-01.png" id="tex_run_1"]
+[ext_resource type="Texture2D" uid="uid://kdefbjwtu68u" path="res://assets/player/adventurer/adventurer-run-02.png" id="tex_run_2"]
+[ext_resource type="Texture2D" uid="uid://bjuxcjtppgmmu" path="res://assets/player/adventurer/adventurer-run-03.png" id="tex_run_3"]
+[ext_resource type="Texture2D" uid="uid://dp828l452k67u" path="res://assets/player/adventurer/adventurer-run-04.png" id="tex_run_4"]
+[ext_resource type="Texture2D" uid="uid://l5avf1uvtnc2" path="res://assets/player/adventurer/adventurer-run-05.png" id="tex_run_5"]
+[ext_resource type="Texture2D" uid="uid://by643kadwrhk5" path="res://assets/player/adventurer/adventurer-slide-00.png" id="tex_slide_0"]
+[ext_resource type="Texture2D" uid="uid://upr8wjdf4pi5" path="res://assets/player/adventurer/adventurer-slide-01.png" id="tex_slide_1"]
+[ext_resource type="Texture2D" uid="uid://c110v1xc024jf" path="res://assets/player/adventurer/adventurer-wall-slide-00.png" id="tex_wall_slide_0"]
+[ext_resource type="Texture2D" uid="uid://dyoj8peariir2" path="res://assets/player/adventurer/adventurer-wall-slide-01.png" id="tex_wall_slide_1"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 resource_local_to_scene = true
 radius = 6.0
 height = 28.0
 
-[sub_resource type="Gradient" id="Gradient_light"]
-offsets = PackedFloat32Array(0, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
-gradient = SubResource("Gradient_light")
-width = 256
-height = 256
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_player"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_crouch_3")
+}],
+"loop": 1,
+"name": &"crouch",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_dash_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_dash_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_dash_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_dash_3")
+}],
+"loop": 0,
+"name": &"dash",
+"speed": 25.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_fall_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_fall_1")
+}],
+"loop": 1,
+"name": &"fall",
+"speed": 8.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("tex_idle_0")
@@ -73,8 +106,62 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("tex_idle_3")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_jump_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_jump_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_jump_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_jump_3")
+}],
+"loop": 0,
+"name": &"jump",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_clmb_4")
+}],
+"loop": 0,
+"name": &"ledge_climb",
+"speed": 12.5
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("tex_ledge_grb_3")
+}],
+"loop": 1,
+"name": &"ledge_hang",
 "speed": 6.0
 }, {
 "frames": [{
@@ -96,36 +183,19 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("tex_run_5")
 }],
-"loop": true,
+"loop": 1,
 "name": &"run",
 "speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("tex_jump_0")
+"texture": ExtResource("tex_slide_0")
 }, {
 "duration": 1.0,
-"texture": ExtResource("tex_jump_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_jump_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_jump_3")
+"texture": ExtResource("tex_slide_1")
 }],
-"loop": false,
-"name": &"jump",
-"speed": 12.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_fall_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_fall_1")
-}],
-"loop": true,
-"name": &"fall",
+"loop": 1,
+"name": &"slide",
 "speed": 8.0
 }, {
 "frames": [{
@@ -135,116 +205,46 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("tex_wall_slide_1")
 }],
-"loop": true,
+"loop": 1,
 "name": &"wall_slide",
 "speed": 6.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_crouch_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_crouch_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_crouch_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_crouch_3")
-}],
-"loop": true,
-"name": &"crouch",
-"speed": 6.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_slide_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_slide_1")
-}],
-"loop": true,
-"name": &"slide",
-"speed": 8.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_dash_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_dash_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_dash_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_dash_3")
-}],
-"loop": false,
-"name": &"dash",
-"speed": 25.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_grb_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_grb_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_grb_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_grb_3")
-}],
-"loop": true,
-"name": &"ledge_hang",
-"speed": 6.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_clmb_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_clmb_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_clmb_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_clmb_3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_ledge_clmb_4")
-}],
-"loop": false,
-"name": &"ledge_climb",
-"speed": 12.5
 }]
 
-[node name="Player" type="CharacterBody2D" groups=["player"]]
-script = ExtResource("script_player")
+[sub_resource type="Gradient" id="Gradient_light"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_light"]
+gradient = SubResource("Gradient_light")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="Player" type="CharacterBody2D" unique_id=1567554763 groups=["player"]]
+script = ExtResource("script_player")
+light_max_energy = 0.8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2147261220]
 shape = SubResource("CapsuleShape2D_player")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=321565359]
 position = Vector2(0, -3)
 sprite_frames = SubResource("SpriteFrames_player")
 animation = &"idle"
 autoplay = "idle"
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1476627176]
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=298823354]
 color = Color(1, 0.72, 0.38, 1)
 texture = SubResource("GradientTexture2D_light")
 texture_scale = 0.75
 
-[node name="Ember" type="Node" parent="."]
+[node name="Ember" type="Node" parent="." unique_id=222419069]
 script = ExtResource("script_ember")
 
-[node name="Sanity" type="Node" parent="."]
+[node name="Sanity" type="Node" parent="." unique_id=1689002688]
 script = ExtResource("script_sanity")

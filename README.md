@@ -23,10 +23,10 @@ Um herói ágil atravessa um mundo consumido pela escuridão. A luz é refúgio 
 | Dash (instantâneo, gasta brasa; no ar vai na direção apertada) | K | ○ ou R1 |
 | Correr (segurar; grátis por padrão) | Shift | R2 |
 | Curar (segurar) | Q | △ |
-| Slide | C ou Ctrl | L1 ou L2 |
+| Slide (baixo correndo) | ↓ ou S correndo | Analógico/D-pad para baixo correndo |
 | Cima (mira do dash no ar) | W ou ↑ | Analógico/D-pad para cima |
 | Agachar | S ou ↓ | Analógico/D-pad para baixo |
-| Atacar (ainda sem efeito) | J ou clique | □ |
+| Atacar (combo de 3 golpes no chão, golpe no ar) | J ou clique esquerdo | □ |
 | Interagir (ainda sem efeito) | E | R3 |
 
 ## Estrutura
@@ -36,6 +36,7 @@ scenes/
   player.tscn        herói (CharacterBody2D, sprite, câmera, luz, Ember)
   test_level.tscn    fase de teste (túnel baixo, poço, poço com paredes, luzes)
   light_source.tscn  fonte de luz (recarrega a brasa)
+  enemy_shadow.tscn  inimigo rastejador de sombra
   ember_bar.tscn     barras de teste na tela (brasa e sanidade)
   shadow_eyes.tscn   criaturas de olhos vermelhos nas bordas + vinheta + "pegada"
   voice_box.tscn     caixa de voz em vermelho
@@ -44,6 +45,7 @@ scripts/
   ember_component.gd barra de brasa
   light_source.gd    recarga de brasa nas luzes
   kill_zone.gd       queda no vazio: volta ao início
+  enemy_shadow.gd    inimigo: patrulha, persegue, leva dano e morre
   ember_bar.gd       atualiza as barras na tela
   sanity_component.gd sanidade (cai fora da luz, estágios, sinal broke)
   game_state.gd      Autoload: checkpoint, flags, finais e save em disco
@@ -56,15 +58,20 @@ assets/player/adventurer/   frames do herói (arte provisória)
 ## Como funciona (resumo)
 - **Player** (`player.gd`): máquina de estados `IDLE, RUN, JUMP, FALL, WALL_SLIDE, CROUCH, SLIDE, DASH`. Tudo se ajusta no **Inspetor** do nó `Player` (grupos Movimento, Pulo, Parede, Agachar e Deslizar, Dash, Visual, Luz), sem mexer no código.
 - **Dash:** instantâneo, gasta brasa (`dash_ember_cost`), tem i-frames, cooldown e rastro. **No chão** é um deslize horizontal com colisão baixa. **No ar** vai em 8 direções (`dash_air_8_directions`); para cima é mais curto (`dash_up_multiplier`). Sem direção apertada, segue para onde o herói olha. Pular durante o dash no chão cancela o dash e mantém o impulso.
-- **Slide curto:** botão próprio (`slide`), sem brasa. **Deslize com brasa:** apertar slide *enquanto corre* gasta brasa por segundo (`power_slide_ember_per_second`) e dura até `power_slide_max_duration` (0 = até a brasa acabar), desde que a corrida continue segurada; depois desacelera como um slide normal.
-- **Corrida:** segurar `sprint` move mais rápido (`sprint_speed`). **Grátis por padrão** (`sprint_ember_per_second = 0`); coloque um valor para cobrar brasa por segundo. A sanidade cai mais devagar enquanto corre. Pular correndo mantém a velocidade no ar (mais alcance) e dá um bônus pequeno de altura.
+- **Slide:** apertar **baixo** correndo (acima de `slide_down_min_speed`). Não há botão dedicado. No analógico o baixo precisa estar quase pleno (`slide_down_stick_threshold`) e só conta ao *apertar*. A velocidade inicial é a velocidade anterior × `slide_speed_multiplier`, então quanto mais rápido, mais longe desliza. A colisão fica bem baixa (`slide_height`) para passar por vãos baixos. Se a corrida continuar segurada, ao fim do deslize o herói volta a correr; senão, para (ou agacha, se baixo ainda estiver segurado).
+- **Corrida:** segurar `sprint` move mais rápido (`sprint_speed`). **Grátis por padrão** (`sprint_ember_per_second = 0`); coloque um valor para cobrar brasa por segundo. A sanidade cai mais devagar enquanto corre ou desliza segurando a corrida. Pular correndo mantém a velocidade no ar (mais alcance) e dá um bônus pequeno de altura.
 - **Cura:** segurar `heal` ~1 s no chão converte brasa em sanidade (`heal_ember_cost`, `heal_sanity_amount`); o herói anda mais devagar enquanto cura.
 - **Brasa:** `EmberComponent` (`spend`, `drain`, `refill`, sinal `changed`). Não drena sozinha; só queima no estado crítico da sanidade.
 - **Quinas:** no ar, segurando em direção a uma parede cujo topo está na altura da cabeça, o herói se pendura (`LEDGE_HANG`). **Pular** sobe (`LEDGE_CLIMB`); **agachar** ou segurar para longe solta. Ajustes no grupo *Quina* do Inspetor.
 - **Sanidade:** `SanityComponent` no `Player`. Cai fora das fontes de luz e recupera dentro (`drain_per_second`, `recover_per_second`). Ao chegar no **marcador crítico** (`critical_ratio`) ela para e a **brasa queima** (`critical_ember_per_second`); sem brasa, volta a cair até quebrar. Criaturas aparecem nas bordas por estágios; ao zerar, elas "pulam" e o herói volta ao último checkpoint. A barra de sanidade pulsa em vermelho no estado crítico.
-- **Checkpoint:** cada `LightSource` é checkpoint ao ser tocada. A zona de queda também usa o checkpoint.
+- **Checkpoint:** cada `LightSource` é checkpoint quando ilumina o herói (precisa de linha de visão).
 - **Voz em vermelho:** `VoiceTrigger` (Area2D) dispara as falas escritas no Inspetor; `GameState.say("...")` fala por código. As falas atuais são só marcadores.
 - **Luz:** `CanvasModulate` escurece a fase; `PointLight2D` no herói (tamanho segue a brasa) e nas fontes de luz.
+- **Zona de luz com linha de visão:** a `LightSource` só conta o herói como "na luz" se ele estiver dentro da zona (`zone_ratio` × o raio do brilho) **e** nenhum chão, parede ou teto estiver entre a lâmpada e ele (raios para cabeça, centro e pés). Os blocos da fase de teste têm `LightOccluder2D` (levemente recuados, para a borda continuar iluminada) e as luzes projetam sombras. Em TileMaps, use a camada de oclusão do TileSet.
+- **Combate:** apertar atacar no chão faz um combo de 3 golpes (`combo_damage`, o último é o finalizador); apertar de novo dentro de `combo_window` continua o combo. No ar, um golpe aéreo. O dash cancela o golpe (e dá i-frames). Cada golpe só machuca na parte "ativa" da animação (`hit_windows`) e uma vez por inimigo. Acertar recarrega brasa (`ember_per_hit`, mais ao matar), dá uma pausa curta no impacto (`hitstop_time`) e treme a câmera.
+- **Dano no herói:** o inimigo ao encostar tira **sanidade** (`contact_damage`), empurra o herói (`hurt_knockback`), atordoa por um instante e dá invulnerabilidade curta (o herói pisca). O dash também desvia.
+- **Inimigo (`enemy_shadow`):** patrulha perto do ponto inicial, vira em paredes e bordas, persegue o herói quando o enxerga (`sight_range`), leva knockback ao ser atingido e morre depois de `max_health` de dano. É só uma silhueta com olhos brilhantes, desenhada por código (sem arte).
+- **Camadas de colisão:** 1 = mundo e herói; 2 = corpo dos inimigos (não bloqueia o herói); 3 = hurtbox dos inimigos (a área do golpe do herói só enxerga esta).
 - **Luz do herói:** o tamanho e a força da luz seguem a **sanidade** (não a brasa); a vinheta na tela é sutil e avermelhada.
 - **Pés alinhados:** `anim_y_offset` ajusta a altura do sprite por animação (queda +4, wall slide +2).
 - **Arte do herói e tileset são provisórios** e serão substituídos por arte própria.
@@ -85,15 +92,15 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - [x] Agarrar e escalar quinas (a testar)
 - [x] Sanidade, criaturas nas bordas, checkpoint e respawn (a testar)
 - [x] Caixa de voz em vermelho e gatilhos de fala (a testar)
-- [x] Corrida e deslize com brasa, cura, estado crítico e luz que segue a sanidade (a testar)
+- [x] Combate: combo de 3 golpes, golpe aéreo, hitbox/hurtbox, dano na sanidade e 1 inimigo (a testar)
+- [x] Corrida grátis, deslize por velocidade (baixo correndo), cura, estado crítico e luz que segue a sanidade (a testar)
 - [x] `GameState` (Autoload) com flags, finais e save em disco
 
 ### A fazer (ordem sugerida)
 - [ ] Testar e ajustar o "feeling" do movimento, do dash, das quinas e da sanidade (valores no Inspetor)
-- [ ] Testar o uso das brasas (dash em 8 direções, deslize com brasa, cura, estado crítico) e a corrida grátis; ajustar os custos
+- [ ] Testar o uso das brasas (dash em 8 direções, cura, estado crítico) e a corrida grátis; ajustar os custos
 - [ ] Escrever as falas da voz (hoje são marcadores) e ligar falas aos estágios de sanidade
-- [ ] Combate: combo de 3 golpes, ataque aéreo, hitbox/hurtbox
-- [ ] Inimigos (tipos a definir)
+- [ ] Mais tipos de inimigo (ex.: voador à distância) e comportamento em relação à luz
 - [ ] Nível do Capítulo 1 (3 a 4 trechos) com tileset
 - [ ] Corredor escuro (cena especial)
 - [ ] Eco (NPC) com diálogo
