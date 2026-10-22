@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/kill_zone.gd" id="script_kill"]
 [ext_resource type="Script" path="res://scripts/voice_trigger.gd" id="script_voice"]
 [ext_resource type="PackedScene" path="res://scenes/enemy_shadow.tscn" id="enemy_scene"]
+[ext_resource type="PackedScene" path="res://scenes/echo.tscn" id="echo_scene"]
 
 [sub_resource type="RectangleShape2D" id="Rect_0"]
 size = Vector2(800, 60)
@@ -325,3 +326,10 @@ position = Vector2(470, 192)
 
 [node name="Enemy2" parent="." instance=ExtResource("enemy_scene")]
 position = Vector2(950, 192)
+
+[node name="Echo1" parent="." instance=ExtResource("echo_scene")]
+position = Vector2(95, 200)
+lines = Array[String](["(fala 1 do eco: edite no Inspetor)", "(fala 2 do eco: edite no Inspetor)"])
+repeat_lines = Array[String](["(o eco repete: edite no Inspetor)"])
+leave_lines = Array[String](["(o eco se despede: edite no Inspetor)"])
+flag_to_set = "falou_com_eco_teste"

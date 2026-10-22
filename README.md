@@ -38,6 +38,8 @@ scenes/
   light_source.tscn  fonte de luz (recarrega a brasa)
   enemy_shadow.tscn  inimigo rastejador de sombra
   main_menu.tscn     menu principal estilizado (raio de luz)
+  echo.tscn          eco (NPC): fala com o herói
+  dialog_box.tscn    caixa de diálogo (texto digitado)
   ember_bar.tscn     barras de teste na tela (brasa e sanidade)
   shadow_eyes.tscn   criaturas de olhos vermelhos nas bordas + vinheta + "pegada"
   voice_box.tscn     caixa de voz em vermelho
@@ -48,6 +50,8 @@ scripts/
   kill_zone.gd       queda no vazio: volta ao início
   enemy_shadow.gd    inimigo: patrulha, persegue, leva dano e morre
   main_menu.gd       menu: constrói o cenário, o raio de luz e os botões por código
+  echo.gd            eco: detecta o herói, abre a conversa, avisos e falas ao sair
+  dialog_box.gd      caixa de diálogo: `await box.open(nome, [linhas])`
   ember_bar.gd       atualiza as barras na tela
   sanity_component.gd sanidade (cai fora da luz, estágios, sinal broke)
   game_state.gd      Autoload: checkpoint, flags, finais e save em disco
@@ -76,6 +80,7 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - **Inimigo (`enemy_shadow`):** patrulha perto do ponto inicial, vira em paredes e bordas, persegue o herói quando o enxerga (`sight_range`), depois de ferir o herói recua (`recoil_time`) e espera `attack_cooldown` antes de poder ferir de novo, leva knockback ao ser atingido e morre depois de `max_health` de dano. É só uma silhueta com olhos brilhantes, desenhada por código (sem arte).
 - **Camadas de colisão:** 1 = mundo e herói; 2 = corpo dos inimigos (não bloqueia o herói); 3 = hurtbox dos inimigos (a área do golpe do herói só enxerga esta).
 - **Menu principal (`main_menu.tscn`):** um raio de luz (uma `PointLight2D` em cone + um feixe visível aditivo) sai de cima e **mira o botão selecionado**; uma segunda luz "de revelação" ilumina uma parte diferente do cenário por opção (Jogar: o herói; Configurações: engrenagens; Créditos: ecos). Em **Sair** a luz e o raio se apagam e surgem olhos vermelhos. O herói aparece de lado olhando para a luz (a arte atual não tem vista de costas). Tudo é construído por código e ajustável no Inspetor do nó `MainMenu` (cores, tamanhos de fonte, posição do raio...). Para testar o menu: abra a cena e aperte **F6**. Para o jogo abrir pelo menu, defina `main_menu.tscn` como cena principal (*Projeto → Configurações → Aplicação → Executar*). "Jogar" vai para `main.tscn`; "Configurações" e "Créditos" ainda mostram "Em breve."
+- **Eco (NPC) e diálogo:** o eco é um vulto translúcido e levemente luminoso. Com `auto_start` ligado, a **primeira** conversa começa sozinha quando o herói chega perto (no chão); as seguintes pedem apertar **interact** (aparece o aviso "[E] Falar"). Durante a conversa o herói fica parado e a sanidade pausa. As **falas são suas**: edite `lines` (conversa), `repeat_lines` (se falar de novo; vazio = não conversa mais) e `leave_lines` (comentário solto ao se afastar) no Inspetor; os textos atuais são marcadores. A caixa de diálogo digita o texto; **interact / Enter / Espaço / ✕** avançam (o primeiro aperto completa a linha). `flag_to_set` marca um flag no `GameState`. A `DialogBox` é criada sozinha na cena atual se ainda não existir.
 - **Luz do herói:** o tamanho e a força da luz seguem a **sanidade** (não a brasa); a vinheta na tela é sutil e avermelhada.
 - **Pés alinhados:** `anim_y_offset` ajusta a altura do sprite por animação (queda +4, wall slide +2).
 - **Arte do herói e tileset são provisórios** e serão substituídos por arte própria.
@@ -96,6 +101,7 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - [x] Agarrar e escalar quinas (a testar)
 - [x] Sanidade, criaturas nas bordas, checkpoint e respawn (a testar)
 - [x] Caixa de voz em vermelho e gatilhos de fala (a testar)
+- [x] Eco (NPC) com caixa de diálogo de texto digitado (a testar; falas a escrever)
 - [x] Menu principal estilizado: raio de luz que mira o botão, revelação por opção e "Sair" apaga tudo (a testar)
 - [x] Combate: combo de 3 golpes, golpe aéreo, hitbox/hurtbox, dano na sanidade e 1 inimigo (a testar)
 - [x] Corrida grátis, deslize por velocidade (baixo correndo), cura, estado crítico e luz que segue a sanidade (a testar)
@@ -108,7 +114,6 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - [ ] Mais tipos de inimigo (ex.: voador à distância) e comportamento em relação à luz
 - [ ] Nível do Capítulo 1 (3 a 4 trechos) com tileset
 - [ ] Corredor escuro (cena especial)
-- [ ] Eco (NPC) com diálogo
 - [ ] Cutscene de abertura (cidade que decai) e tela de título
 - [ ] Polimento: câmera, partículas, hitstop, áudio, UI
 - [ ] Imunidade à sombra após o final (flag no `GameState`)

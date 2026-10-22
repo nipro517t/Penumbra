@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/echo.gd" id="script_echo"]
+
+[node name="Echo" type="Area2D"]
+script = ExtResource("script_echo")
