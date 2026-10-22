@@ -1,6 +1,12 @@
 extends CanvasLayer
 ## Criaturas de olhos vermelhos nas bordas da tela + vinheta, reagindo à sanidade.
 ## Ao zerar a sanidade, as criaturas "pulam", a tela escurece e o herói volta ao checkpoint.
+##
+## COMO FUNCIONA: cada criatura (SLOTS) fica numa borda da tela e só aparece a partir de
+## um estágio de sanidade; conforme o estágio sobe, ela se aproxima (_inward). A vinheta é
+## um shader simples (VIGNETTE_SHADER). A sequência de "pegada" (_on_broke) é uma
+## corrotina: usa `await` para esperar cada animação terminar, na ordem:
+## pular → escurecer → respawn → clarear. O herói fica travado (controls_locked) durante isso.
 
 const HIDDEN_PX := -26.0
 const VIGNETTE_SHADER := """

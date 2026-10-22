@@ -2,10 +2,15 @@ class_name EnemyShadow
 extends CharacterBody2D
 ## Rastejador de sombra: patrulha, persegue o herói de perto e tira sanidade ao encostar.
 ## Camadas: corpo = 2 (não bloqueia o herói), hurtbox = 3 (o golpe do herói a enxerga).
+##
+## ESTADOS: PATROL (anda perto do ponto inicial) → CHASE (persegue ao enxergar o herói)
+## → RECOIL (recua depois de ferir) | HURT (atordoado ao levar um golpe) | DEAD.
+## O dano no herói é por contato (_check_contact → Player.take_damage). O herói o machuca
+## chamando take_hit(), que o Player encontra pela área "Hurtbox" (camada 3).
 
 signal died
 
-enum State { PATROL, CHASE, HURT, DEAD }
+enum State { PATROL, CHASE, HURT, RECOIL, DEAD }
 
 @export var max_health := 4
 ## Sanidade que o herói perde ao ser tocado.
@@ -16,6 +21,10 @@ enum State { PATROL, CHASE, HURT, DEAD }
 ## Distância horizontal e vertical em que enxerga o herói.
 @export var sight_range := 120.0
 @export var sight_height := 40.0
+## Depois de ferir o herói, o inimigo recua e espera antes de poder ferir de novo.
+@export var attack_cooldown := 1.0
+@export var recoil_time := 0.45
+@export var recoil_speed := 55.0
 @export var gravity := 900.0
 @export var knockback := Vector2(130.0, -80.0)
 @export var hit_stun_time := 0.3
@@ -27,6 +36,8 @@ var health := 0
 var _dir := 1.0
 var _origin_x := 0.0
 var _stun := 0.0
+var _recoil := 0.0
+var _contact_cd := 0.0
 var _time := 0.0
 var _player: Player
 var _visual: Node2D
@@ -46,6 +57,7 @@ func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
 	_time += delta
+	_contact_cd = maxf(_contact_cd - delta, 0.0)
 	if _player == null:
 		_player = get_tree().get_first_node_in_group("player") as Player
 	if not is_on_floor():
@@ -56,6 +68,8 @@ func _physics_process(delta: float) -> void:
 			_patrol_step()
 		State.CHASE:
 			_chase_step()
+		State.RECOIL:
+			_recoil_step(delta)
 		State.HURT:
 			_stun -= delta
 			velocity.x = move_toward(velocity.x, 0.0, 400.0 * delta)
@@ -97,6 +111,18 @@ func _chase_step() -> void:
 		velocity.x = 0.0
 
 
+func _recoil_step(delta: float) -> void:
+	_recoil -= delta
+	var away := -_dir
+	if _player:
+		away = signf(global_position.x - _player.global_position.x)
+		if away == 0.0:
+			away = -_dir
+	velocity.x = away * recoil_speed if _ground_ahead_for(away) else 0.0
+	if _recoil <= 0.0:
+		state = State.CHASE
+
+
 func _can_see_player() -> bool:
 	if _player == null:
 		return false
@@ -105,19 +131,27 @@ func _can_see_player() -> bool:
 
 
 func _ground_ahead() -> bool:
-	var from := global_position + Vector2(_dir * 10.0, 0.0)
+	return _ground_ahead_for(_dir)
+
+
+func _ground_ahead_for(direction: float) -> bool:
+	var from := global_position + Vector2(direction * 10.0, 0.0)
 	var query := PhysicsRayQueryParameters2D.create(from, from + Vector2(0.0, 16.0), 1)
 	query.exclude = [get_rid()]
 	return not get_world_2d().direct_space_state.intersect_ray(query).is_empty()
 
 
 func _check_contact() -> void:
-	if state == State.DEAD or state == State.HURT:
+	if state == State.DEAD or state == State.HURT or state == State.RECOIL or _contact_cd > 0.0:
 		return
 	for body in contact_area.get_overlapping_bodies():
 		var player := body as Player
-		if player:
-			player.take_damage(contact_damage, global_position)
+		if player and player.take_damage(contact_damage, global_position):
+			# acertou o herói: recua e espera antes de poder ferir de novo
+			_contact_cd = attack_cooldown
+			_recoil = recoil_time
+			state = State.RECOIL
+			return
 
 
 # ---------------------------------------------------------------------- dano

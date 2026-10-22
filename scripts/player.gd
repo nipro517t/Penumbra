@@ -1,6 +1,31 @@
 class_name Player
 extends CharacterBody2D
 ## Herói: corrida, pulo, parede, quinas, agachar/deslizar e dash movido a brasa.
+##
+## ─────────────────────────────────────────────────────────────────────────
+## COMO ESTE SCRIPT FUNCIONA (leia isto primeiro)
+## ─────────────────────────────────────────────────────────────────────────
+## 1) O herói é uma MÁQUINA DE ESTADOS: a variável `state` diz o que ele está
+##    fazendo (IDLE, RUN, JUMP...). A cada frame o script olha o estado e a
+##    situação (está no chão? apertou algum botão?) e decide o que fazer e para
+##    qual estado ir em seguida.
+## 2) A ordem de cada frame de física está em _physics_process():
+##    timers → (dash | quina | ataque | movimento normal) → move_and_slide()
+##    → forma da colisão → animação → luz.
+## 3) O movimento normal está em _move_step(). Cada mecânica tem suas funções:
+##    pulo (_start_jump), pulo na parede (_start_wall_jump), deslize (_wants_slide),
+##    corrida (_pay_sprint), quina (_find_ledge...), dash (_try_start_dash...),
+##    combate (_try_start_attack...) e dano (take_damage).
+## 4) Quase todos os números são variáveis @export: ajuste no Inspetor, sem
+##    mexer no código.
+## 5) Outros scripts falam com este por SINAIS (dashed, damaged, hit_enemy) e por
+##    funções públicas: take_damage, respawn_at, set_lit_by, is_in_light,
+##    sanity_drain_multiplier.
+##
+## Convenções: nomes que começam com "_" são internos; `delta` = tempo do frame
+## (em segundos); `dir` = direção horizontal (-1 a 1); no Godot, y POSITIVO é
+## para BAIXO (por isso o pulo tem velocidade negativa).
+## Veja também o GUIA_DO_CODIGO.md.
 
 signal dashed
 signal damaged
@@ -74,6 +99,8 @@ enum State { IDLE, RUN, JUMP, FALL, WALL_SLIDE, CROUCH, SLIDE, DASH, LEDGE_HANG,
 ## Velocidade horizontal mantida ao terminar o dash.
 @export var dash_exit_speed := 170.0
 @export var dash_invincible := true
+## Invulnerabilidade extra (s) depois do dash: dá tempo de sair de dentro de um inimigo atravessado.
+@export var dash_iframe_grace := 0.25
 ## No chão, o dash vira um deslize (usa a animação de slide e a colisão baixa).
 @export var dash_slides_on_ground := true
 ## No ar, o dash vai em 8 direções (use o analógico/WASD). Desligado = só horizontal.
@@ -151,6 +178,7 @@ var _attack_duration := 0.3
 var _hurt_timer := 0.0
 var _stun_timer := 0.0
 var _hitstopping := false
+var _iframes_timer := 0.0
 ## Fontes de luz que estão iluminando o herói agora (com linha de visão). Vazio = no escuro.
 var _light_sources: Dictionary = {}
 ## Travado durante cenas (ex.: quando as criaturas pegam o herói).
@@ -212,6 +240,12 @@ func _ready() -> void:
 	_setup_combat()
 
 
+## Segurança: o "hitstop" altera Engine.time_scale; se o herói sair da cena nesse
+## instante, o jogo ficaria em câmera lenta para sempre. Aqui voltamos ao normal.
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
+
+
 func _physics_process(delta: float) -> void:
 	if controls_locked:
 		_locked_step(delta)
@@ -264,8 +298,12 @@ func _locked_step(delta: float) -> void:
 
 # ---------------------------------------------------------------- timers
 
+## Atualiza os cronômetros e as leituras que valem para o frame inteiro.
 func _tick_timers(delta: float) -> void:
 	var on_floor := is_on_floor()
+	# COYOTE TIME: depois de sair de uma borda ainda dá para pular por alguns instantes
+	# (o timer é recarregado enquanto está no chão e só começa a cair ao sair).
+	# JUMP BUFFER: um pulo apertado um pouco ANTES de pousar é lembrado e sai ao pousar.
 	_coyote_timer = coyote_time if on_floor else _coyote_timer - delta
 
 	if Input.is_action_just_pressed("jump"):
@@ -283,6 +321,7 @@ func _tick_timers(delta: float) -> void:
 	_ledge_cooldown = maxf(_ledge_cooldown - delta, 0.0)
 	_hurt_timer = maxf(_hurt_timer - delta, 0.0)
 	_stun_timer = maxf(_stun_timer - delta, 0.0)
+	_iframes_timer = maxf(_iframes_timer - delta, 0.0)
 	_combo_timer = maxf(_combo_timer - delta, 0.0)
 	_attack_cd = maxf(_attack_cd - delta, 0.0)
 	if Input.is_action_just_pressed("attack"):
@@ -308,6 +347,10 @@ func _detect_wall() -> int:
 
 # ------------------------------------------------------------ movimento
 
+## Movimento normal. A ORDEM das etapas importa (mudar a ordem muda o comportamento):
+##  1. para onde olha   2. gravidade   3. wall slide   4. pulo / pulo na parede
+##  5. corte do pulo    6. cura         7. DECIDE O ESTADO (chão: deslizar/agachar/
+##  correr/parado; parede; ar)   8. corrida   9. aceleração horizontal   10. quina
 func _move_step(delta: float, dir: float) -> void:
 	var stuck_low := _is_crouched() and not _can_stand()
 
@@ -332,6 +375,7 @@ func _move_step(delta: float, dir: float) -> void:
 		elif _wall_coyote_timer > 0.0:
 			_start_wall_jump()
 			wall_sliding = false
+	# PULO VARIÁVEL: soltar o botão durante a subida corta a velocidade (pulo mais baixo).
 	if Input.is_action_just_released("jump") and velocity.y < 0.0:
 		velocity.y *= jump_cut_multiplier
 
@@ -386,6 +430,9 @@ func _move_step(delta: float, dir: float) -> void:
 			speed_cap = sprint_speed
 		if _heal_progress > 0.0:
 			speed_cap *= heal_move_multiplier
+		# move_toward(a, b, passo) anda de "a" até "b" no máximo "passo" por frame:
+		# é isso que faz o herói acelerar e frear de forma suave (e não de repente).
+		# No ar o controle é menor (air_control).
 		var control := 1.0 if on_ground else air_control
 		if dir != 0.0:
 			velocity.x = move_toward(velocity.x, dir * speed_cap, acceleration * control * delta)
@@ -490,12 +537,13 @@ func _start_attack(air: bool, dir: float) -> void:
 		state = State.AIR_ATTACK
 	else:
 		if _combo_timer > 0.0:
-			_combo_index = (_combo_index + 1) % combo_damage.size()
+			_combo_index = (_combo_index + 1) % maxi(combo_damage.size(), 1)
 		else:
 			_combo_index = 0
 		_attack_anim = "attack%d" % (_combo_index + 1)
-		_attack_damage = combo_damage[_combo_index]
-		_attack_window = hit_windows[_combo_index]
+		# (os "mini" evitam erro se você editar as listas do Inspetor e elas ficarem curtas)
+		_attack_damage = combo_damage[mini(_combo_index, combo_damage.size() - 1)]
+		_attack_window = hit_windows[mini(_combo_index, hit_windows.size() - 1)]
 		fps = finisher_anim_fps if _combo_index == combo_damage.size() - 1 else attack_anim_fps
 		velocity.x = float(facing) * attack_lunge_speed
 		state = State.ATTACK
@@ -597,9 +645,9 @@ func _shake(strength: float) -> void:
 
 
 ## Dano recebido (o dano é na sanidade). O dash dá invulnerabilidade.
-func take_damage(amount: float, from: Vector2) -> void:
-	if invincible or _hurt_timer > 0.0 or controls_locked:
-		return
+func take_damage(amount: float, from: Vector2) -> bool:
+	if invincible or _iframes_timer > 0.0 or _hurt_timer > 0.0 or controls_locked:
+		return false
 	_deactivate_hitbox()
 	sanity.set_sanity(sanity.sanity - amount)
 	_hurt_timer = hurt_invincible_time
@@ -612,6 +660,7 @@ func take_damage(amount: float, from: Vector2) -> void:
 	state = State.FALL
 	damaged.emit()
 	_shake(3.0)
+	return true
 
 
 func _stun_step(delta: float) -> void:
@@ -789,6 +838,7 @@ func _dash_step(delta: float) -> void:
 
 func _end_dash() -> void:
 	invincible = false
+	_iframes_timer = dash_iframe_grace
 	velocity = _dash_vec * dash_exit_speed
 	state = State.FALL if not is_on_floor() else State.IDLE
 
@@ -883,11 +933,13 @@ func _update_animation() -> void:
 		sprite.play(anim)
 	sprite.speed_scale = sprint_anim_scale if _sprinting else 1.0
 	sprite.position.y = _sprite_base_y + float(anim_y_offset.get(anim, 0.0))
-	# pisca enquanto está invulnerável depois de levar dano
+	# feedback de invulnerabilidade: pisca ao levar dano; fica azulado e translúcido no dash
 	if _hurt_timer > 0.0 and int(_hurt_timer * 20.0) % 2 == 0:
-		sprite.modulate.a = 0.35
+		sprite.modulate = Color(1.0, 1.0, 1.0, 0.35)
+	elif invincible or _iframes_timer > 0.0:
+		sprite.modulate = Color(0.65, 0.85, 1.0, 0.6)
 	else:
-		sprite.modulate.a = 1.0
+		sprite.modulate = Color.WHITE
 
 
 func _update_light() -> void:
@@ -948,7 +1000,9 @@ func respawn_at(pos: Vector2) -> void:
 	_deactivate_hitbox()
 	_hurt_timer = 0.0
 	_stun_timer = 0.0
+	_iframes_timer = 0.0
 	_combo_timer = 0.0
+	_attack_buffer = 0.0
 	_sprinting = false
 	_heal_progress = 0.0
 	ember.refill(ember.max_energy)

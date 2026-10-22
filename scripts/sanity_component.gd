@@ -3,6 +3,15 @@ extends Node
 ## Sanidade do herói: cai fora das fontes de luz e recupera dentro delas.
 ## Ao chegar no marcador crítico a sanidade para de cair e a BRASA começa a queimar;
 ## quando a brasa acaba, a sanidade volta a cair até quebrar.
+##
+## FLUXO A CADA FRAME (_process):
+##  1. Dentro da luz (com linha de visão) → recupera e sai do estado crítico.
+##  2. No escuro e ACIMA do marcador crítico → cai, mas para no marcador.
+##  3. No marcador e ainda com brasa → a BRASA queima e a sanidade fica parada
+##     (é o "estado crítico": o jogador deve se curar ou chegar a uma luz).
+##  4. No marcador e sem brasa → a sanidade volta a cair até zerar.
+##  5. Zerou → emite `broke` (o ShadowEyes faz as criaturas "pegarem" o herói).
+## Os ESTÁGIOS (1 a 3, por faixas de sanidade) aparecem em `stage_changed`.
 
 signal changed(value: float, max_value: float)
 signal stage_changed(stage: int)
