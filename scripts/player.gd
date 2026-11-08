@@ -158,6 +158,11 @@ enum State { IDLE, RUN, JUMP, FALL, WALL_SLIDE, CROUCH, SLIDE, DASH, LEDGE_HANG,
 @export var light_min_energy := 0.25
 @export var light_max_energy := 1.1
 
+@export_group("Corredor escuro")
+## Luz do herói dentro do corredor escuro (bem fraca, para só enxergar o que está colado).
+@export var corridor_light_scale := 0.12
+@export var corridor_light_energy := 0.15
+
 var state: State = State.IDLE
 var facing := 1
 ## Use isto no sistema de dano (passo 7): ignore golpes enquanto for true.
@@ -183,6 +188,9 @@ var _iframes_timer := 0.0
 var _light_sources: Dictionary = {}
 ## Travado durante cenas (ex.: quando as criaturas pegam o herói).
 var controls_locked := false
+## Modo "corredor escuro": dash e pulo desligados e luz mínima. Use set_corridor_mode()
+## (a CorridorZone faz isso ao entrar e sair da área).
+var corridor_mode := false
 ## Onde a cena começou; usado como respawn se ainda não houver checkpoint.
 var spawn_position := Vector2.ZERO
 
@@ -206,6 +214,8 @@ var _sprinting := false
 var _air_sprint := false
 var _slide_dir := 1
 var _heal_progress := 0.0
+## Áudio: maior velocidade de queda desde que saiu do chão (para o som de pouso).
+var _peak_fall := 0.0
 var _sprite_base_y := 0.0
 var _radius := 6.0
 var _ledge_dir := 1
@@ -238,6 +248,16 @@ func _ready() -> void:
 	_ensure_actions()
 	light.shadow_enabled = true
 	_setup_combat()
+	sprite.frame_changed.connect(_on_sprite_frame_changed)
+
+
+## Passos: toca um som em dois frames da animação de corrida.
+func _on_sprite_frame_changed() -> void:
+	if sprite.animation != &"run" or not is_on_floor():
+		return
+	var count := sprite.sprite_frames.get_frame_count(&"run")
+	if sprite.frame == 0 or sprite.frame == count / 2:
+		AudioManager.play("step")
 
 
 ## Segurança: o "hitstop" altera Engine.time_scale; se o herói sair da cena nesse
@@ -301,12 +321,18 @@ func _locked_step(delta: float) -> void:
 ## Atualiza os cronômetros e as leituras que valem para o frame inteiro.
 func _tick_timers(delta: float) -> void:
 	var on_floor := is_on_floor()
+	if on_floor:
+		if _peak_fall > 180.0:
+			AudioManager.play("land", clampf(1.2 - _peak_fall / 1000.0, 0.7, 1.1))
+		_peak_fall = 0.0
+	else:
+		_peak_fall = maxf(_peak_fall, velocity.y)
 	# COYOTE TIME: depois de sair de uma borda ainda dá para pular por alguns instantes
 	# (o timer é recarregado enquanto está no chão e só começa a cair ao sair).
 	# JUMP BUFFER: um pulo apertado um pouco ANTES de pousar é lembrado e sai ao pousar.
 	_coyote_timer = coyote_time if on_floor else _coyote_timer - delta
 
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") and not corridor_mode:
 		_buffer_timer = jump_buffer_time
 	else:
 		_buffer_timer -= delta
@@ -458,6 +484,7 @@ func _start_jump() -> void:
 	_buffer_timer = 0.0
 	_coyote_timer = 0.0
 	state = State.JUMP
+	AudioManager.play("jump")
 
 
 func _start_wall_jump() -> void:
@@ -469,6 +496,7 @@ func _start_wall_jump() -> void:
 	_wall_coyote_timer = 0.0
 	_coyote_timer = 0.0
 	state = State.JUMP
+	AudioManager.play("wall_jump")
 
 
 # -------------------------------------------------------------- combate
@@ -522,6 +550,7 @@ func _try_start_attack(dir: float) -> bool:
 
 func _start_attack(air: bool, dir: float) -> void:
 	_hit_targets.clear()
+	AudioManager.play("attack", 1.0 + 0.08 * _combo_index)
 	_attack_air = air
 	_sprinting = false
 	_heal_progress = 0.0
@@ -573,7 +602,7 @@ func _attack_step(delta: float, dir: float) -> void:
 	_update_hitbox(t)
 
 	# no chão, pular cancela o final do golpe
-	if not _attack_air and t > _attack_window.y and Input.is_action_just_pressed("jump") and is_on_floor():
+	if not _attack_air and t > _attack_window.y and Input.is_action_just_pressed("jump") and is_on_floor() and not corridor_mode:
 		_deactivate_hitbox()
 		_start_jump()
 		return
@@ -704,6 +733,7 @@ func _find_ledge() -> Dictionary:
 
 
 func _start_ledge_hang(ledge: Dictionary) -> void:
+	AudioManager.play("ledge")
 	_ledge_dir = facing
 	_ledge_wall_x = float(ledge["wall_x"])
 	_ledge_top_y = float(ledge["top_y"])
@@ -783,7 +813,7 @@ func _dash_direction(dir: float) -> Vector2:
 
 
 func _try_start_dash(dir: float) -> bool:
-	if not Input.is_action_just_pressed("dash"):
+	if corridor_mode or not Input.is_action_just_pressed("dash"):
 		return false
 	var vec := _dash_direction(dir)
 	var side := int(signf(vec.x)) if absf(vec.x) > 0.1 else 0
@@ -943,6 +973,11 @@ func _update_animation() -> void:
 
 
 func _update_light() -> void:
+	if corridor_mode:
+		# no corredor escuro a luz fica mínima (sem depender da sanidade)
+		light.energy = lerpf(light.energy, corridor_light_energy, 0.08)
+		light.texture_scale = lerpf(light.texture_scale, corridor_light_scale, 0.08)
+		return
 	var t := sanity.ratio()
 	var flicker := 0.0
 	if sanity.is_critical():
@@ -962,6 +997,14 @@ func set_lit_by(source: Object, lit: bool) -> void:
 		_light_sources.erase(id)
 
 
+## Liga/desliga o modo corredor escuro (sem dash e sem pulo, luz mínima).
+func set_corridor_mode(enabled: bool) -> void:
+	corridor_mode = enabled
+	_buffer_timer = 0.0
+	if enabled and state == State.DASH:
+		_end_dash()
+
+
 func is_in_light() -> bool:
 	return not _light_sources.is_empty()
 
@@ -977,6 +1020,7 @@ func _update_heal(delta: float, on_ground: bool) -> void:
 			var ratio := minf(ember.energy / heal_ember_cost, 1.0)
 			ember.drain(heal_ember_cost)
 			sanity.set_sanity(sanity.sanity + heal_sanity_amount * ratio)
+			AudioManager.play("heal")
 	else:
 		_heal_progress = 0.0
 
@@ -1014,7 +1058,7 @@ func respawn_at(pos: Vector2) -> void:
 ## Se você criar a ação no Mapa de Entrada, o seu mapeamento vale.
 func _ensure_actions() -> void:
 	_ensure_action("sprint", [KEY_SHIFT], [], [[JOY_AXIS_TRIGGER_RIGHT, 1.0]])
-	_ensure_action("heal", [KEY_Q], [JOY_BUTTON_Y], [])
+	_ensure_action("heal", [KEY_Q], [JOY_BUTTON_LEFT_SHOULDER], [])
 	_ensure_action("move_up", [KEY_W, KEY_UP], [JOY_BUTTON_DPAD_UP], [[JOY_AXIS_LEFT_Y, -1.0]])
 
 

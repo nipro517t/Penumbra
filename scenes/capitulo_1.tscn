@@ -1,0 +1,1066 @@
+[gd_scene format=3 uid="uid://cl2m5krao8r1l"]
+
+[ext_resource type="PackedScene" path="res://scenes/enemy_shadow.tscn" id="enemy_scene"]
+[ext_resource type="PackedScene" uid="uid://c3txq3mxrodx3" path="res://scenes/light_source.tscn" id="light_scene"]
+[ext_resource type="Script" uid="uid://rpa4yrh0i0rd" path="res://scripts/parallax_city.gd" id="script_bg"]
+[ext_resource type="Script" uid="uid://gqkbxtmn3kir" path="res://scripts/corridor_zone.gd" id="script_corr"]
+[ext_resource type="Script" uid="uid://dmw23adjytams" path="res://scripts/echo.gd" id="script_echo"]
+[ext_resource type="Script" uid="uid://dr4fffityohe1" path="res://scripts/chapter_end.gd" id="script_end"]
+[ext_resource type="Script" uid="uid://cu5acdqosn8ny" path="res://scripts/light_item.gd" id="script_item"]
+[ext_resource type="Script" uid="uid://w0xam1vjdoit" path="res://scripts/kill_zone.gd" id="script_kill"]
+[ext_resource type="Script" uid="uid://dt6s0c7kjfm2b" path="res://scripts/voice_trigger.gd" id="script_voice"]
+[ext_resource type="Script" uid="uid://b8ikn4ph6j2lm" path="res://scripts/light_item_zone.gd" id="script_zone"]
+
+[sub_resource type="RectangleShape2D" id="Rect_kill"]
+size = Vector2(14000, 40)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoA"]
+size = Vector2(360, 60)
+
+[sub_resource type="CanvasItemMaterial" id="Mat_unshaded"]
+light_mode = 1
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoA"]
+polygon = PackedVector2Array(-178, -24, 178, -24, 178, 28, -178, 28)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoB"]
+size = Vector2(130, 100)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoB"]
+polygon = PackedVector2Array(-63, -44, 63, -44, 63, 48, -63, 48)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoC"]
+size = Vector2(70, 100)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoC"]
+polygon = PackedVector2Array(-33, -44, 33, -44, 33, 48, -33, 48)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoD"]
+size = Vector2(60, 140)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoD"]
+polygon = PackedVector2Array(-28, -64, 28, -64, 28, 68, -28, 68)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoE"]
+size = Vector2(120, 180)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoE"]
+polygon = PackedVector2Array(-58, -84, 58, -84, 58, 88, -58, 88)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoF"]
+size = Vector2(80, 180)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoF"]
+polygon = PackedVector2Array(-38, -84, 38, -84, 38, 88, -38, 88)
+
+[sub_resource type="RectangleShape2D" id="Rect_Muro"]
+size = Vector2(60, 250)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_Muro"]
+polygon = PackedVector2Array(-28, -119, 28, -119, 28, 123, -28, 123)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoG"]
+size = Vector2(110, 180)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoG"]
+polygon = PackedVector2Array(-53, -84, 53, -84, 53, 88, -53, 88)
+
+[sub_resource type="RectangleShape2D" id="Rect_Segredo"]
+size = Vector2(50, 30)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_Segredo"]
+polygon = PackedVector2Array(-23, -9, 23, -9, 23, 13, -23, 13)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoH"]
+size = Vector2(215, 180)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoH"]
+polygon = PackedVector2Array(-105.5, -84, 105.5, -84, 105.5, 88, -105.5, 88)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoI"]
+size = Vector2(190, 180)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoI"]
+polygon = PackedVector2Array(-93, -84, 93, -84, 93, 88, -93, 88)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoJ"]
+size = Vector2(398, 180)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoJ"]
+polygon = PackedVector2Array(-197, -84, 197, -84, 197, 88, -197, 88)
+
+[sub_resource type="RectangleShape2D" id="Rect_Arco"]
+size = Vector2(50, 95)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_Arco"]
+polygon = PackedVector2Array(-23, -41.5, 23, -41.5, 23, 45.5, -23, 45.5)
+
+[sub_resource type="RectangleShape2D" id="Rect_PocoEsq"]
+size = Vector2(50, 110)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_PocoEsq"]
+polygon = PackedVector2Array(-23, -49, 23, -49, 23, 53, -23, 53)
+
+[sub_resource type="RectangleShape2D" id="Rect_PocoDir"]
+size = Vector2(60, 330)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_PocoDir"]
+polygon = PackedVector2Array(-28, -159, 28, -159, 28, 163, -28, 163)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoP"]
+size = Vector2(262, 330)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoP"]
+polygon = PackedVector2Array(-129, -159, 129, -159, 129, 163, -129, 163)
+
+[sub_resource type="RectangleShape2D" id="Rect_voice"]
+size = Vector2(16, 100)
+
+[sub_resource type="RectangleShape2D" id="Rect_ChaoQ"]
+size = Vector2(4950, 330)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_ChaoQ"]
+polygon = PackedVector2Array(-2473, -159, 2473, -159, 2473, 163, -2473, 163)
+
+[sub_resource type="RectangleShape2D" id="Rect_corr"]
+size = Vector2(500, 100)
+
+[sub_resource type="RectangleShape2D" id="Rect_Fosso"]
+size = Vector2(150, 260)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_Fosso"]
+polygon = PackedVector2Array(-73, -128, 73, -128, 73, 128, -73, 128)
+
+[sub_resource type="RectangleShape2D" id="Rect_P1"]
+size = Vector2(238, 70)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P1"]
+polygon = PackedVector2Array(-117, -33, 117, -33, 117, 33, -117, 33)
+
+[sub_resource type="RectangleShape2D" id="Rect_P_Poco1_Esq"]
+size = Vector2(50, 110)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P_Poco1_Esq"]
+polygon = PackedVector2Array(-23, -53, 23, -53, 23, 53, -23, 53)
+
+[sub_resource type="RectangleShape2D" id="Rect_P_Poco1_Dir"]
+size = Vector2(60, 220)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P_Poco1_Dir"]
+polygon = PackedVector2Array(-28, -108, 28, -108, 28, 108, -28, 108)
+
+[sub_resource type="RectangleShape2D" id="Rect_P2"]
+size = Vector2(160, 90)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P2"]
+polygon = PackedVector2Array(-78, -43, 78, -43, 78, 43, -78, 43)
+
+[sub_resource type="RectangleShape2D" id="Rect_P3"]
+size = Vector2(280, 160)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P3"]
+polygon = PackedVector2Array(-138, -78, 138, -78, 138, 78, -138, 78)
+
+[sub_resource type="RectangleShape2D" id="Rect_P4"]
+size = Vector2(150, 30)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P4"]
+polygon = PackedVector2Array(-73, -13, 73, -13, 73, 13, -73, 13)
+
+[sub_resource type="RectangleShape2D" id="Rect_P_Poco2_Esq"]
+size = Vector2(50, 70)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P_Poco2_Esq"]
+polygon = PackedVector2Array(-23, -33, 23, -33, 23, 33, -23, 33)
+
+[sub_resource type="RectangleShape2D" id="Rect_P_Poco2_Dir"]
+size = Vector2(60, 140)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P_Poco2_Dir"]
+polygon = PackedVector2Array(-28, -68, 28, -68, 28, 68, -28, 68)
+
+[sub_resource type="RectangleShape2D" id="Rect_P5"]
+size = Vector2(160, 30)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P5"]
+polygon = PackedVector2Array(-78, -13, 78, -13, 78, 13, -78, 13)
+
+[sub_resource type="RectangleShape2D" id="Rect_P6"]
+size = Vector2(620, 100)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P6"]
+polygon = PackedVector2Array(-308, -48, 308, -48, 308, 48, -308, 48)
+
+[sub_resource type="RectangleShape2D" id="Rect_P_Fim"]
+size = Vector2(40, 165)
+
+[sub_resource type="OccluderPolygon2D" id="Occ_P_Fim"]
+polygon = PackedVector2Array(-18, -80.5, 18, -80.5, 18, 80.5, -18, 80.5)
+
+[node name="Capitulo1" type="Node2D" unique_id=1175269097]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1783918220]
+color = Color(0.3, 0.3, 0.42, 1)
+
+[node name="Background" type="Node2D" parent="." unique_id=1349186406]
+script = ExtResource("script_bg")
+
+[node name="PlayerStart" type="Marker2D" parent="." unique_id=461048739]
+position = Vector2(-40, 186)
+
+[node name="KillZone" type="Area2D" parent="." unique_id=596640780]
+position = Vector2(4000, 420)
+script = ExtResource("script_kill")
+respawn_point = NodePath("../PlayerStart")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KillZone" unique_id=1374355422]
+shape = SubResource("Rect_kill")
+
+[node name="Trecho1" type="Node2D" parent="." unique_id=713234548]
+
+[node name="ChaoA" type="StaticBody2D" parent="Trecho1" unique_id=1260221712]
+position = Vector2(80, 230)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoA" unique_id=213443011]
+shape = SubResource("Rect_ChaoA")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoA" unique_id=1804436646]
+offset_left = -180.0
+offset_top = -30.0
+offset_right = 180.0
+offset_bottom = 30.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoA" unique_id=152030038]
+material = SubResource("Mat_unshaded")
+offset_left = -180.0
+offset_top = -30.0
+offset_right = 180.0
+offset_bottom = -28.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoA" unique_id=60663404]
+occluder = SubResource("Occ_ChaoA")
+
+[node name="ChaoB" type="StaticBody2D" parent="Trecho1" unique_id=785225393]
+position = Vector2(325, 210)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoB" unique_id=1862008282]
+shape = SubResource("Rect_ChaoB")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoB" unique_id=232277420]
+offset_left = -65.0
+offset_top = -50.0
+offset_right = 65.0
+offset_bottom = 50.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoB" unique_id=1931645724]
+material = SubResource("Mat_unshaded")
+offset_left = -65.0
+offset_top = -50.0
+offset_right = 65.0
+offset_bottom = -48.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoB" unique_id=517978715]
+occluder = SubResource("Occ_ChaoB")
+
+[node name="ChaoC" type="StaticBody2D" parent="Trecho1" unique_id=977549253]
+position = Vector2(485, 210)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoC" unique_id=168814738]
+shape = SubResource("Rect_ChaoC")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoC" unique_id=1556035327]
+offset_left = -35.0
+offset_top = -50.0
+offset_right = 35.0
+offset_bottom = 50.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoC" unique_id=1652628096]
+material = SubResource("Mat_unshaded")
+offset_left = -35.0
+offset_top = -50.0
+offset_right = 35.0
+offset_bottom = -48.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoC" unique_id=649736894]
+occluder = SubResource("Occ_ChaoC")
+
+[node name="ChaoD" type="StaticBody2D" parent="Trecho1" unique_id=1082435831]
+position = Vector2(550, 190)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoD" unique_id=678778670]
+shape = SubResource("Rect_ChaoD")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoD" unique_id=1605696606]
+offset_left = -30.0
+offset_top = -70.0
+offset_right = 30.0
+offset_bottom = 70.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoD" unique_id=1354412450]
+material = SubResource("Mat_unshaded")
+offset_left = -30.0
+offset_top = -70.0
+offset_right = 30.0
+offset_bottom = -68.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoD" unique_id=734059540]
+occluder = SubResource("Occ_ChaoD")
+
+[node name="ChaoE" type="StaticBody2D" parent="Trecho1" unique_id=423842204]
+position = Vector2(640, 170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoE" unique_id=1731456954]
+shape = SubResource("Rect_ChaoE")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoE" unique_id=921261504]
+offset_left = -60.0
+offset_top = -90.0
+offset_right = 60.0
+offset_bottom = 90.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoE" unique_id=1273101243]
+material = SubResource("Mat_unshaded")
+offset_left = -60.0
+offset_top = -90.0
+offset_right = 60.0
+offset_bottom = -88.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoE" unique_id=1809506753]
+occluder = SubResource("Occ_ChaoE")
+
+[node name="ChaoF" type="StaticBody2D" parent="Trecho1" unique_id=351485222]
+position = Vector2(800, 170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoF" unique_id=3692123]
+shape = SubResource("Rect_ChaoF")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoF" unique_id=1482594467]
+offset_left = -40.0
+offset_top = -90.0
+offset_right = 40.0
+offset_bottom = 90.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoF" unique_id=64853495]
+material = SubResource("Mat_unshaded")
+offset_left = -40.0
+offset_top = -90.0
+offset_right = 40.0
+offset_bottom = -88.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoF" unique_id=494152856]
+occluder = SubResource("Occ_ChaoF")
+
+[node name="Muro" type="StaticBody2D" parent="Trecho1" unique_id=2133761447]
+position = Vector2(870, 135)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/Muro" unique_id=353596499]
+shape = SubResource("Rect_Muro")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/Muro" unique_id=176755563]
+offset_left = -30.0
+offset_top = -125.0
+offset_right = 30.0
+offset_bottom = 125.0
+color = Color(0.51, 0.442, 0.476, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/Muro" unique_id=78415597]
+material = SubResource("Mat_unshaded")
+offset_left = -30.0
+offset_top = -125.0
+offset_right = 30.0
+offset_bottom = -123.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/Muro" unique_id=367916716]
+occluder = SubResource("Occ_Muro")
+
+[node name="ChaoG" type="StaticBody2D" parent="Trecho1" unique_id=724164003]
+position = Vector2(955, 170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoG" unique_id=2008679058]
+shape = SubResource("Rect_ChaoG")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoG" unique_id=1545605821]
+offset_left = -55.0
+offset_top = -90.0
+offset_right = 55.0
+offset_bottom = 90.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoG" unique_id=1378496148]
+material = SubResource("Mat_unshaded")
+offset_left = -55.0
+offset_top = -90.0
+offset_right = 55.0
+offset_bottom = -88.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoG" unique_id=910290101]
+occluder = SubResource("Occ_ChaoG")
+
+[node name="Segredo" type="StaticBody2D" parent="Trecho1" unique_id=1367771164]
+position = Vector2(1065, 35)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/Segredo" unique_id=201646072]
+shape = SubResource("Rect_Segredo")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/Segredo" unique_id=1110599412]
+offset_left = -25.0
+offset_top = -15.0
+offset_right = 25.0
+offset_bottom = 15.0
+color = Color(0.51, 0.442, 0.476, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/Segredo" unique_id=1487518768]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -15.0
+offset_right = 25.0
+offset_bottom = -13.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/Segredo" unique_id=1806576055]
+occluder = SubResource("Occ_Segredo")
+
+[node name="ChaoH" type="StaticBody2D" parent="Trecho1" unique_id=921842672]
+position = Vector2(1222.5, 170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho1/ChaoH" unique_id=372029364]
+shape = SubResource("Rect_ChaoH")
+
+[node name="Visual" type="ColorRect" parent="Trecho1/ChaoH" unique_id=1607376072]
+offset_left = -107.5
+offset_top = -90.0
+offset_right = 107.5
+offset_bottom = 90.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho1/ChaoH" unique_id=1823702301]
+material = SubResource("Mat_unshaded")
+offset_left = -107.5
+offset_top = -90.0
+offset_right = 107.5
+offset_bottom = -88.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho1/ChaoH" unique_id=1347428637]
+occluder = SubResource("Occ_ChaoH")
+
+[node name="L0" parent="Trecho1" unique_id=1652840706 instance=ExtResource("light_scene")]
+position = Vector2(40, 200)
+
+[node name="L1" parent="Trecho1" unique_id=1654680967 instance=ExtResource("light_scene")]
+position = Vector2(650, 80)
+
+[node name="L2" parent="Trecho1" unique_id=2066020643 instance=ExtResource("light_scene")]
+position = Vector2(1230, 80)
+
+[node name="L_segredo" parent="Trecho1" unique_id=571105601 instance=ExtResource("light_scene")]
+position = Vector2(1065, 20)
+
+[node name="Trecho2" type="Node2D" parent="." unique_id=977087905]
+
+[node name="ChaoI" type="StaticBody2D" parent="Trecho2" unique_id=1524507521]
+position = Vector2(1425, 170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/ChaoI" unique_id=209153996]
+shape = SubResource("Rect_ChaoI")
+
+[node name="Visual" type="ColorRect" parent="Trecho2/ChaoI" unique_id=480402429]
+offset_left = -95.0
+offset_top = -90.0
+offset_right = 95.0
+offset_bottom = 90.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho2/ChaoI" unique_id=612045997]
+material = SubResource("Mat_unshaded")
+offset_left = -95.0
+offset_top = -90.0
+offset_right = 95.0
+offset_bottom = -88.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho2/ChaoI" unique_id=1765693554]
+occluder = SubResource("Occ_ChaoI")
+
+[node name="ChaoJ" type="StaticBody2D" parent="Trecho2" unique_id=1777585514]
+position = Vector2(1779, 170)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/ChaoJ" unique_id=5898621]
+shape = SubResource("Rect_ChaoJ")
+
+[node name="Visual" type="ColorRect" parent="Trecho2/ChaoJ" unique_id=576547515]
+offset_left = -199.0
+offset_top = -90.0
+offset_right = 199.0
+offset_bottom = 90.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho2/ChaoJ" unique_id=890144308]
+material = SubResource("Mat_unshaded")
+offset_left = -199.0
+offset_top = -90.0
+offset_right = 199.0
+offset_bottom = -88.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho2/ChaoJ" unique_id=885271644]
+occluder = SubResource("Occ_ChaoJ")
+
+[node name="Arco" type="StaticBody2D" parent="Trecho2" unique_id=984563209]
+position = Vector2(1760, 17.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/Arco" unique_id=793799441]
+shape = SubResource("Rect_Arco")
+
+[node name="Visual" type="ColorRect" parent="Trecho2/Arco" unique_id=1622696272]
+offset_left = -25.0
+offset_top = -47.5
+offset_right = 25.0
+offset_bottom = 47.5
+color = Color(0.51, 0.442, 0.476, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho2/Arco" unique_id=1596970466]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -47.5
+offset_right = 25.0
+offset_bottom = -45.5
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho2/Arco" unique_id=855280488]
+occluder = SubResource("Occ_Arco")
+
+[node name="PocoEsq" type="StaticBody2D" parent="Trecho2" unique_id=1235923738]
+position = Vector2(1905, -15)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/PocoEsq" unique_id=1709950074]
+shape = SubResource("Rect_PocoEsq")
+
+[node name="Visual" type="ColorRect" parent="Trecho2/PocoEsq" unique_id=112923230]
+offset_left = -25.0
+offset_top = -55.0
+offset_right = 25.0
+offset_bottom = 55.0
+color = Color(0.51, 0.442, 0.476, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho2/PocoEsq" unique_id=1981645867]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -55.0
+offset_right = 25.0
+offset_bottom = -53.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho2/PocoEsq" unique_id=1895321375]
+occluder = SubResource("Occ_PocoEsq")
+
+[node name="PocoDir" type="StaticBody2D" parent="Trecho2" unique_id=87722815]
+position = Vector2(2008, 95)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/PocoDir" unique_id=745465825]
+shape = SubResource("Rect_PocoDir")
+
+[node name="Visual" type="ColorRect" parent="Trecho2/PocoDir" unique_id=525189369]
+offset_left = -30.0
+offset_top = -165.0
+offset_right = 30.0
+offset_bottom = 165.0
+color = Color(0.51, 0.442, 0.476, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho2/PocoDir" unique_id=380204451]
+material = SubResource("Mat_unshaded")
+offset_left = -30.0
+offset_top = -165.0
+offset_right = 30.0
+offset_bottom = -163.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho2/PocoDir" unique_id=1848281010]
+occluder = SubResource("Occ_PocoDir")
+
+[node name="ChaoP" type="StaticBody2D" parent="Trecho2" unique_id=643647790]
+position = Vector2(2169, 95)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/ChaoP" unique_id=1471071984]
+shape = SubResource("Rect_ChaoP")
+
+[node name="Visual" type="ColorRect" parent="Trecho2/ChaoP" unique_id=932497771]
+offset_left = -131.0
+offset_top = -165.0
+offset_right = 131.0
+offset_bottom = 165.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho2/ChaoP" unique_id=1326808820]
+material = SubResource("Mat_unshaded")
+offset_left = -131.0
+offset_top = -165.0
+offset_right = 131.0
+offset_bottom = -163.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho2/ChaoP" unique_id=1703689244]
+occluder = SubResource("Occ_ChaoP")
+
+[node name="L2b" parent="Trecho2" unique_id=931942648 instance=ExtResource("light_scene")]
+position = Vector2(1640, 80)
+
+[node name="L3" parent="Trecho2" unique_id=1230520629 instance=ExtResource("light_scene")]
+position = Vector2(2100, -70)
+
+[node name="VoiceTrigger_V3" type="Area2D" parent="Trecho2" unique_id=261842313]
+position = Vector2(2090, -120)
+script = ExtResource("script_voice")
+lines = Array[String](["(V3: fala da voz ao sair do poço)"])
+flag_to_set = "ouviu_v3"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho2/VoiceTrigger_V3" unique_id=546050083]
+shape = SubResource("Rect_voice")
+
+[node name="Fim_Trecho2" type="Marker2D" parent="Trecho2" unique_id=619348296]
+position = Vector2(2280, -84)
+
+[node name="Trecho3" type="Node2D" parent="." unique_id=1945546053]
+
+[node name="ChaoQ" type="StaticBody2D" parent="Trecho3" unique_id=826467170]
+position = Vector2(4925, 95)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/ChaoQ" unique_id=129543804]
+shape = SubResource("Rect_ChaoQ")
+
+[node name="Visual" type="ColorRect" parent="Trecho3/ChaoQ" unique_id=790655145]
+offset_left = -2475.0
+offset_top = -165.0
+offset_right = 2475.0
+offset_bottom = 165.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho3/ChaoQ" unique_id=1062879017]
+material = SubResource("Mat_unshaded")
+offset_left = -2475.0
+offset_top = -165.0
+offset_right = 2475.0
+offset_bottom = -163.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho3/ChaoQ" unique_id=1140302262]
+occluder = SubResource("Occ_ChaoQ")
+
+[node name="L5" parent="Trecho3" unique_id=2019876004 instance=ExtResource("light_scene")]
+position = Vector2(5260, -70)
+
+[node name="VoiceTrigger_V4a" type="Area2D" parent="Trecho3" unique_id=1808472183]
+position = Vector2(4800, -120)
+script = ExtResource("script_voice")
+lines = Array[String](["(V4-a: fala no corredor)"])
+flag_to_set = "ouviu_v4a"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/VoiceTrigger_V4a" unique_id=142010579]
+shape = SubResource("Rect_voice")
+
+[node name="VoiceTrigger_V4b" type="Area2D" parent="Trecho3" unique_id=1441906156]
+position = Vector2(4925, -120)
+script = ExtResource("script_voice")
+lines = Array[String](["(V4-b: fala no corredor)"])
+flag_to_set = "ouviu_v4b"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/VoiceTrigger_V4b" unique_id=159810089]
+shape = SubResource("Rect_voice")
+
+[node name="VoiceTrigger_V4c" type="Area2D" parent="Trecho3" unique_id=1409048162]
+position = Vector2(5050, -120)
+script = ExtResource("script_voice")
+lines = Array[String](["(V4-c: fala no corredor)"])
+flag_to_set = "ouviu_v4c"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/VoiceTrigger_V4c" unique_id=2115125198]
+shape = SubResource("Rect_voice")
+
+[node name="VoiceTrigger_V4d" type="Area2D" parent="Trecho3" unique_id=344636683]
+position = Vector2(5150, -120)
+script = ExtResource("script_voice")
+lines = Array[String](["(V4-d: fala no corredor)"])
+flag_to_set = "ouviu_v4d"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/VoiceTrigger_V4d" unique_id=165685727]
+shape = SubResource("Rect_voice")
+
+[node name="ItemLuz" type="Area2D" parent="Trecho3" unique_id=1919829941]
+position = Vector2(3750, -70)
+script = ExtResource("script_item")
+
+[node name="ItemLuz_Ignorou" type="Area2D" parent="Trecho3" unique_id=1664604664]
+position = Vector2(4050, -120)
+script = ExtResource("script_zone")
+kind = 1
+lines = Array[String](["(V1-B: fala de quem passou direto)"])
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/ItemLuz_Ignorou" unique_id=369379211]
+shape = SubResource("Rect_voice")
+
+[node name="ItemLuz_Quebra" type="Area2D" parent="Trecho3" unique_id=369406532]
+position = Vector2(4650, -120)
+script = ExtResource("script_zone")
+lines = Array[String](["(V1-QUEBRA: fala quando o item quebra)"])
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/ItemLuz_Quebra" unique_id=1245777583]
+shape = SubResource("Rect_voice")
+
+[node name="Corredor" type="Area2D" parent="Trecho3" unique_id=1992670228]
+position = Vector2(4950, -120)
+script = ExtResource("script_corr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/Corredor" unique_id=1914872815]
+shape = SubResource("Rect_corr")
+
+[node name="Fosso" type="StaticBody2D" parent="Trecho3" unique_id=1646623344]
+position = Vector2(2375, 130)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho3/Fosso" unique_id=751997600]
+shape = SubResource("Rect_Fosso")
+
+[node name="Visual" type="ColorRect" parent="Trecho3/Fosso" unique_id=297488270]
+offset_left = -75.0
+offset_top = -130.0
+offset_right = 75.0
+offset_bottom = 130.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho3/Fosso" unique_id=213416394]
+material = SubResource("Mat_unshaded")
+offset_left = -75.0
+offset_top = -130.0
+offset_right = 75.0
+offset_bottom = -128.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho3/Fosso" unique_id=1893271006]
+occluder = SubResource("Occ_Fosso")
+
+[node name="L4" parent="Trecho3" unique_id=466264139 instance=ExtResource("light_scene")]
+position = Vector2(2540, -70)
+
+[node name="Inimigo_A1" parent="Trecho3" unique_id=2047326929 instance=ExtResource("enemy_scene")]
+position = Vector2(2880, -79)
+
+[node name="L4b" parent="Trecho3" unique_id=1481708266 instance=ExtResource("light_scene")]
+position = Vector2(3150, -70)
+
+[node name="Inimigo_B1" parent="Trecho3" unique_id=323394909 instance=ExtResource("enemy_scene")]
+position = Vector2(3430, -79)
+
+[node name="Inimigo_B2" parent="Trecho3" unique_id=158583047 instance=ExtResource("enemy_scene")]
+position = Vector2(3560, -79)
+
+[node name="Trecho4" type="Node2D" parent="." unique_id=1161280468]
+
+[node name="P1" type="StaticBody2D" parent="Trecho4" unique_id=1569293738]
+position = Vector2(5639, -105)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P1" unique_id=1131805167]
+shape = SubResource("Rect_P1")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P1" unique_id=1306576563]
+offset_left = -119.0
+offset_top = -35.0
+offset_right = 119.0
+offset_bottom = 35.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P1" unique_id=1442875065]
+material = SubResource("Mat_unshaded")
+offset_left = -119.0
+offset_top = -35.0
+offset_right = 119.0
+offset_bottom = -33.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P1" unique_id=1680826022]
+occluder = SubResource("Occ_P1")
+
+[node name="P_Poco1_Esq" type="StaticBody2D" parent="Trecho4" unique_id=1835262358]
+position = Vector2(5685, -235)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P_Poco1_Esq" unique_id=1669580195]
+shape = SubResource("Rect_P_Poco1_Esq")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P_Poco1_Esq" unique_id=599008655]
+offset_left = -25.0
+offset_top = -55.0
+offset_right = 25.0
+offset_bottom = 55.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P_Poco1_Esq" unique_id=453005034]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -55.0
+offset_right = 25.0
+offset_bottom = -53.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P_Poco1_Esq" unique_id=993507293]
+occluder = SubResource("Occ_P_Poco1_Esq")
+
+[node name="P_Poco1_Dir" type="StaticBody2D" parent="Trecho4" unique_id=216233590]
+position = Vector2(5788, -180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P_Poco1_Dir" unique_id=1526176812]
+shape = SubResource("Rect_P_Poco1_Dir")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P_Poco1_Dir" unique_id=1616882898]
+offset_left = -30.0
+offset_top = -110.0
+offset_right = 30.0
+offset_bottom = 110.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P_Poco1_Dir" unique_id=1967158522]
+material = SubResource("Mat_unshaded")
+offset_left = -30.0
+offset_top = -110.0
+offset_right = 30.0
+offset_bottom = -108.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P_Poco1_Dir" unique_id=906898330]
+occluder = SubResource("Occ_P_Poco1_Dir")
+
+[node name="P2" type="StaticBody2D" parent="Trecho4" unique_id=712988784]
+position = Vector2(5898, -245)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P2" unique_id=403618953]
+shape = SubResource("Rect_P2")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P2" unique_id=1427049573]
+offset_left = -80.0
+offset_top = -45.0
+offset_right = 80.0
+offset_bottom = 45.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P2" unique_id=1404578011]
+material = SubResource("Mat_unshaded")
+offset_left = -80.0
+offset_top = -45.0
+offset_right = 80.0
+offset_bottom = -43.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P2" unique_id=1431379275]
+occluder = SubResource("Occ_P2")
+
+[node name="P3" type="StaticBody2D" parent="Trecho4" unique_id=1162036449]
+position = Vector2(6118, -280)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P3" unique_id=838322171]
+shape = SubResource("Rect_P3")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P3" unique_id=226057697]
+offset_left = -140.0
+offset_top = -80.0
+offset_right = 140.0
+offset_bottom = 80.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P3" unique_id=1035914058]
+material = SubResource("Mat_unshaded")
+offset_left = -140.0
+offset_top = -80.0
+offset_right = 140.0
+offset_bottom = -78.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P3" unique_id=811122366]
+occluder = SubResource("Occ_P3")
+
+[node name="P4" type="StaticBody2D" parent="Trecho4" unique_id=1206250203]
+position = Vector2(6383, -440)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P4" unique_id=1336979898]
+shape = SubResource("Rect_P4")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P4" unique_id=755301191]
+offset_left = -75.0
+offset_top = -15.0
+offset_right = 75.0
+offset_bottom = 15.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P4" unique_id=1586064539]
+material = SubResource("Mat_unshaded")
+offset_left = -75.0
+offset_top = -15.0
+offset_right = 75.0
+offset_bottom = -13.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P4" unique_id=1188324251]
+occluder = SubResource("Occ_P4")
+
+[node name="P_Poco2_Esq" type="StaticBody2D" parent="Trecho4" unique_id=809121767]
+position = Vector2(6385, -530)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P_Poco2_Esq" unique_id=2009440516]
+shape = SubResource("Rect_P_Poco2_Esq")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P_Poco2_Esq" unique_id=1467033878]
+offset_left = -25.0
+offset_top = -35.0
+offset_right = 25.0
+offset_bottom = 35.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P_Poco2_Esq" unique_id=1017061962]
+material = SubResource("Mat_unshaded")
+offset_left = -25.0
+offset_top = -35.0
+offset_right = 25.0
+offset_bottom = -33.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P_Poco2_Esq" unique_id=262659961]
+occluder = SubResource("Occ_P_Poco2_Esq")
+
+[node name="P_Poco2_Dir" type="StaticBody2D" parent="Trecho4" unique_id=1202982766]
+position = Vector2(6488, -495)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P_Poco2_Dir" unique_id=2135818478]
+shape = SubResource("Rect_P_Poco2_Dir")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P_Poco2_Dir" unique_id=681760260]
+offset_left = -30.0
+offset_top = -70.0
+offset_right = 30.0
+offset_bottom = 70.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P_Poco2_Dir" unique_id=1885927990]
+material = SubResource("Mat_unshaded")
+offset_left = -30.0
+offset_top = -70.0
+offset_right = 30.0
+offset_bottom = -68.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P_Poco2_Dir" unique_id=818477543]
+occluder = SubResource("Occ_P_Poco2_Dir")
+
+[node name="P5" type="StaticBody2D" parent="Trecho4" unique_id=1803296567]
+position = Vector2(6598, -550)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P5" unique_id=2069822175]
+shape = SubResource("Rect_P5")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P5" unique_id=1913388104]
+offset_left = -80.0
+offset_top = -15.0
+offset_right = 80.0
+offset_bottom = 15.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P5" unique_id=1839109356]
+material = SubResource("Mat_unshaded")
+offset_left = -80.0
+offset_top = -15.0
+offset_right = 80.0
+offset_bottom = -13.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P5" unique_id=46725186]
+occluder = SubResource("Occ_P5")
+
+[node name="P6" type="StaticBody2D" parent="Trecho4" unique_id=1687541727]
+position = Vector2(6988, -585)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P6" unique_id=1780218669]
+shape = SubResource("Rect_P6")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P6" unique_id=961961969]
+offset_left = -310.0
+offset_top = -50.0
+offset_right = 310.0
+offset_bottom = 50.0
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P6" unique_id=519471158]
+material = SubResource("Mat_unshaded")
+offset_left = -310.0
+offset_top = -50.0
+offset_right = 310.0
+offset_bottom = -48.0
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P6" unique_id=597038609]
+occluder = SubResource("Occ_P6")
+
+[node name="P_Fim" type="StaticBody2D" parent="Trecho4" unique_id=1632599131]
+position = Vector2(7318, -617.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/P_Fim" unique_id=457051416]
+shape = SubResource("Rect_P_Fim")
+
+[node name="Visual" type="ColorRect" parent="Trecho4/P_Fim" unique_id=1782407711]
+offset_left = -20.0
+offset_top = -82.5
+offset_right = 20.0
+offset_bottom = 82.5
+color = Color(0.578, 0.459, 0.34, 1)
+
+[node name="Edge" type="ColorRect" parent="Trecho4/P_Fim" unique_id=836218522]
+material = SubResource("Mat_unshaded")
+offset_left = -20.0
+offset_top = -82.5
+offset_right = 20.0
+offset_bottom = -80.5
+color = Color(0.8, 0.75, 0.9, 1)
+
+[node name="Occluder" type="LightOccluder2D" parent="Trecho4/P_Fim" unique_id=477789452]
+occluder = SubResource("Occ_P_Fim")
+
+[node name="Inimigo_C1" parent="Trecho4" unique_id=1414867552 instance=ExtResource("enemy_scene")]
+position = Vector2(6130, -369)
+
+[node name="Inimigo_D1" parent="Trecho4" unique_id=291610516 instance=ExtResource("enemy_scene")]
+position = Vector2(6790, -644)
+
+[node name="Inimigo_D2" parent="Trecho4" unique_id=143342936 instance=ExtResource("enemy_scene")]
+position = Vector2(6880, -644)
+
+[node name="L6" parent="Trecho4" unique_id=1040164878 instance=ExtResource("light_scene")]
+position = Vector2(7010, -635)
+
+[node name="VoiceTrigger_V6" type="Area2D" parent="Trecho4" unique_id=1918606885]
+position = Vector2(7060, -685)
+script = ExtResource("script_voice")
+lines = Array[String](["(V6: fala ao chegar no topo)"])
+flag_to_set = "ouviu_v6"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Trecho4/VoiceTrigger_V6" unique_id=459572931]
+shape = SubResource("Rect_voice")
+
+[node name="Eco" type="Area2D" parent="Trecho4" unique_id=1480183209]
+position = Vector2(7130, -635)
+script = ExtResource("script_echo")
+lines = Array[String](["(E1-a: pergunta do eco)", "(E1-b: frase inacabada)", "(E1-c: contradição leve)"])
+repeat_lines = Array[String](["(E2: se o jogador ficar parado/falar de novo)"])
+leave_lines = Array[String](["(E3: ao ir embora)"])
+flag_to_set = "falou_com_eco_1"
+
+[node name="FimDoCapitulo" type="Node" parent="Trecho4" unique_id=1897675821]
+script = ExtResource("script_end")
+echo = NodePath("../Eco")

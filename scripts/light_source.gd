@@ -44,7 +44,10 @@ func _physics_process(delta: float) -> void:
 		if lit:
 			player.ember.refill(refill_per_second * delta)
 			if is_checkpoint:
-				GameState.set_checkpoint(global_position + checkpoint_offset)
+				var checkpoint_pos := global_position + checkpoint_offset
+				if GameState.checkpoint != checkpoint_pos:
+					AudioManager.play("lamp")
+				GameState.set_checkpoint(checkpoint_pos)
 
 
 func _on_body_exited(body: Node2D) -> void:

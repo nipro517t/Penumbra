@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/light_source.tscn" id="light_scene"]
 [ext_resource type="Script" path="res://scripts/kill_zone.gd" id="script_kill"]
 [ext_resource type="Script" path="res://scripts/voice_trigger.gd" id="script_voice"]
+[ext_resource type="Script" path="res://scripts/parallax_city.gd" id="script_bg"]
 [ext_resource type="PackedScene" path="res://scenes/enemy_shadow.tscn" id="enemy_scene"]
 [ext_resource type="PackedScene" path="res://scenes/echo.tscn" id="echo_scene"]
 
@@ -73,6 +74,9 @@ light_mode = 1
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 color = Color(0.3, 0.3, 0.42, 1)
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("script_bg")
 
 [node name="PlayerStart" type="Marker2D" parent="."]
 position = Vector2(-60, 186)

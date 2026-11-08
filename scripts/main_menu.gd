@@ -3,7 +3,9 @@ extends Node2D
 ## uma parte diferente do cenário. No botão "Sair", tudo apaga e surgem olhos na escuridão.
 ## Tudo é construído por código; ajuste as variáveis no Inspetor do nó MainMenu.
 
-const GAME_SCENE := "res://scenes/main.tscn"
+const GAME_SCENE := "res://scenes/main_cap1.tscn"
+## Cutscene de abertura: o "Jogar" passa por ela (que depois abre o GAME_SCENE).
+const INTRO_SCENE := "res://scenes/intro.tscn"
 const HERO_FRAMES := "res://assets/player/adventurer/adventurer-idle-%02d.png"
 const GROUND_Y := 215.0
 
@@ -41,6 +43,8 @@ const EYE_SPOTS := [Vector2(95.0, 196.0), Vector2(330.0, 206.0), Vector2(445.0, 
 @export var beam_half_angle := 0.3
 @export var beam_energy := 1.5
 @export var move_time := 0.45
+## Imprime no painel Saída cada comando de controle recebido (para diagnosticar se o controle chega ao jogo).
+@export var debug_input := false
 
 var beam_target := Vector2(60.0, 160.0)
 var beam_strength := 0.0
@@ -60,6 +64,7 @@ var _eyes: Array[Node2D] = []
 var _info: Label
 var _fade: ColorRect
 var _busy := false
+var _stick_armed := true
 
 
 func _ready() -> void:
@@ -72,6 +77,54 @@ func _ready() -> void:
 	await get_tree().process_frame
 	if not _buttons.is_empty():
 		_buttons[0].grab_focus()
+
+
+## Navegação por controle feita à mão (D-pad e analógico esquerdo movem; X confirma),
+## sem depender do mapeamento "ui_*". Consumimos o evento para o Godot não mover o foco em dobro.
+func _input(event: InputEvent) -> void:
+	if debug_input and (event is InputEventJoypadButton or event is InputEventJoypadMotion):
+		print("[menu] controle: ", event.as_text())
+	if _busy or _buttons.is_empty():
+		return
+	if event is InputEventJoypadButton and event.pressed:
+		match event.button_index:
+			JOY_BUTTON_DPAD_UP:
+				_move_focus(-1)
+			JOY_BUTTON_DPAD_DOWN:
+				_move_focus(1)
+			JOY_BUTTON_A:
+				_activate_focused()
+			_:
+				return
+		get_viewport().set_input_as_handled()
+	elif event is InputEventJoypadMotion and event.axis == JOY_AXIS_LEFT_Y:
+		var value: float = event.axis_value
+		if absf(value) < 0.35:
+			_stick_armed = true
+		elif _stick_armed and absf(value) > 0.65:
+			_stick_armed = false
+			_move_focus(1 if value > 0.0 else -1)
+		get_viewport().set_input_as_handled()
+
+
+func _focused_index() -> int:
+	return _buttons.find(get_viewport().gui_get_focus_owner())
+
+
+func _move_focus(step: int) -> void:
+	var count := _buttons.size()
+	var index := _focused_index()
+	if index < 0:
+		index = 0 if step > 0 else count - 1
+	else:
+		index = (index + step + count) % count
+	_buttons[index].grab_focus()
+
+
+func _activate_focused() -> void:
+	var index := _focused_index()
+	if index >= 0:
+		_on_pressed(index)
 
 
 func _process(delta: float) -> void:
@@ -379,7 +432,9 @@ func _on_pressed(index: int) -> void:
 	match index:
 		0:
 			_start_game()
-		1, 2:
+		1:
+			_open_settings()
+		2:
 			_say("Em breve.")
 		3:
 			_busy = true
@@ -394,7 +449,7 @@ func _start_game() -> void:
 	var tween := create_tween()
 	tween.tween_property(_fade, "color:a", 1.0, 0.6)
 	await tween.finished
-	get_tree().change_scene_to_file(GAME_SCENE)
+	get_tree().change_scene_to_file(INTRO_SCENE if ResourceLoader.exists(INTRO_SCENE) else GAME_SCENE)
 
 
 func _say(text: String) -> void:
@@ -403,3 +458,16 @@ func _say(text: String) -> void:
 	var tween := create_tween()
 	tween.tween_interval(1.2)
 	tween.tween_property(_info, "modulate:a", 0.0, 0.4)
+
+
+## Abre as configurações (menu compartilhado do autoload PauseMenu). Enquanto abertas,
+## o menu principal fica "ocupado" e não reage ao controle.
+func _open_settings() -> void:
+	_busy = true
+	PauseMenu.open_settings(_on_settings_closed)
+
+
+func _on_settings_closed() -> void:
+	_busy = false
+	if _buttons.size() > 1:
+		_buttons[1].grab_focus()

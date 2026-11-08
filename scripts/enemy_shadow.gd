@@ -12,6 +12,18 @@ signal died
 
 enum State { PATROL, CHASE, HURT, RECOIL, DEAD }
 
+## Arte provisória (monster pack 2, recolorida): folhas de células 48x48.
+const SHEET_BODY := "res://assets/enemies/shadow/shadow_body.png"
+const SHEET_EYES := "res://assets/enemies/shadow/shadow_eyes.png"
+const CELL := 48
+## nome: [linha da folha, nº de quadros, quadros por segundo, repete?]
+const ANIMS := {
+	"idle": [0, 8, 8.0, true],
+	"walk": [1, 8, 10.0, true],
+	"attack": [4, 8, 14.0, false],
+	"death": [2, 10, 12.0, false],
+}
+
 @export var max_health := 4
 ## Sanidade que o herói perde ao ser tocado.
 @export var contact_damage := 15.0
@@ -41,7 +53,10 @@ var _contact_cd := 0.0
 var _time := 0.0
 var _player: Player
 var _visual: Node2D
-var _flash: Polygon2D
+var _body: AnimatedSprite2D
+var _eyes: AnimatedSprite2D
+var _flash: AnimatedSprite2D
+var _anim: StringName = &""
 
 @onready var contact_area: Area2D = $ContactArea
 
@@ -162,6 +177,7 @@ func take_hit(damage: int, from: Vector2) -> bool:
 		return false
 	health -= damage
 	_flash_white()
+	AudioManager.play("enemy_die" if health <= 0 else "enemy_hit")
 	var away := signf(global_position.x - from.x)
 	if away == 0.0:
 		away = 1.0
@@ -181,9 +197,10 @@ func _die() -> void:
 	$Hurtbox/CollisionShape2D.set_deferred("disabled", true)
 	$ContactArea/CollisionShape2D.set_deferred("disabled", true)
 	died.emit()
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(_visual, "modulate:a", 0.0, 0.35)
-	tween.tween_property(_visual, "scale", Vector2(1.4, 0.2), 0.35)
+	_play(&"death")
+	await _body.animation_finished
+	var tween := create_tween()
+	tween.tween_property(_visual, "modulate:a", 0.0, 0.3)
 	await tween.finished
 	queue_free()
 
@@ -198,53 +215,72 @@ func _flash_white() -> void:
 
 func _update_visual() -> void:
 	_visual.scale.x = _dir if _dir != 0.0 else 1.0
-	_visual.position.y = -2.0 + sin(_time * 9.0) * 0.8 * float(absf(velocity.x) > 5.0)
+	if state == State.RECOIL:
+		_play(&"attack")
+	elif absf(velocity.x) > 5.0:
+		_play(&"walk")
+	else:
+		_play(&"idle")
 
 
-## Silhueta preta com contorno vermelho escuro e olhos brilhantes (sem asset de arte).
+## Toca a mesma animação no corpo, nos olhos e no clarão, para ficarem sincronizados.
+func _play(anim: StringName) -> void:
+	if anim == _anim:
+		return
+	_anim = anim
+	_body.play(anim)
+	_eyes.play(anim)
+	_flash.play(anim)
+
+
+func _make_frames(sheet: Texture2D) -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	if frames.has_animation("default"):
+		frames.remove_animation("default")
+	for anim_name in ANIMS:
+		var info: Array = ANIMS[anim_name]
+		frames.add_animation(anim_name)
+		frames.set_animation_speed(anim_name, float(info[2]))
+		frames.set_animation_loop(anim_name, bool(info[3]))
+		for i in int(info[1]):
+			var atlas := AtlasTexture.new()
+			atlas.atlas = sheet
+			atlas.region = Rect2(i * CELL, int(info[0]) * CELL, CELL, CELL)
+			frames.add_frame(anim_name, atlas)
+	return frames
+
+
+## Corpo escuro (recebe luz e sombra) + olhos sem luz (brilham no escuro) + clarão branco ao levar golpe.
 func _build_visual() -> void:
 	var unshaded := CanvasItemMaterial.new()
 	unshaded.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
 
+	var flash_shader := Shader.new()
+	flash_shader.code = "shader_type canvas_item;\nrender_mode unshaded;\nvoid fragment() { COLOR = vec4(1.0, 1.0, 1.0, COLOR.a); }\n"
+	var flash_material := ShaderMaterial.new()
+	flash_material.shader = flash_shader
+
+	var body_frames := _make_frames(load(SHEET_BODY) as Texture2D)
+	var eyes_frames := _make_frames(load(SHEET_EYES) as Texture2D)
+
+	# O pé da arte (linha 31 da célula) cai na base da cápsula (y = +8) com o sprite centrado.
 	_visual = Node2D.new()
-	_visual.position = Vector2(0.0, -2.0)
 	add_child(_visual)
 
-	var points := _blob(11.0, 8.0)
-	var body := Polygon2D.new()
-	body.color = Color(0.0, 0.0, 0.0, 1.0)
-	body.polygon = points
-	_visual.add_child(body)
+	_body = AnimatedSprite2D.new()
+	_body.sprite_frames = body_frames
+	_visual.add_child(_body)
 
-	var outline := Line2D.new()
-	outline.points = points
-	outline.closed = true
-	outline.width = 1.0
-	outline.default_color = Color(0.5, 0.08, 0.2, 1.0)
-	outline.material = unshaded
-	_visual.add_child(outline)
+	_eyes = AnimatedSprite2D.new()
+	_eyes.sprite_frames = eyes_frames
+	_eyes.modulate = eye_color
+	_eyes.material = unshaded
+	_visual.add_child(_eyes)
 
-	for eye_x in [2.0, 6.5]:
-		var eye := ColorRect.new()
-		eye.color = eye_color
-		eye.size = Vector2(2.0, 3.0)
-		eye.position = Vector2(float(eye_x), -3.0)
-		eye.material = unshaded
-		_visual.add_child(eye)
-
-	_flash = Polygon2D.new()
-	_flash.color = Color(1.0, 1.0, 1.0, 1.0)
-	_flash.polygon = points
-	_flash.material = unshaded
+	_flash = AnimatedSprite2D.new()
+	_flash.sprite_frames = body_frames
+	_flash.material = flash_material
 	_flash.modulate.a = 0.0
 	_visual.add_child(_flash)
 
-
-func _blob(radius_x: float, radius_y: float) -> PackedVector2Array:
-	var points := PackedVector2Array()
-	var count := 14
-	for i in count:
-		var angle := TAU * float(i) / float(count)
-		var wobble := 0.85 + 0.15 * sin(angle * 3.0 + 1.0)
-		points.append(Vector2(cos(angle) * radius_x, sin(angle) * radius_y) * wobble)
-	return points
+	_play(&"idle")

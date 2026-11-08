@@ -14,6 +14,8 @@ extends Area2D
 signal talked
 
 const DIALOG_SCENE := preload("res://scenes/dialog_box.tscn")
+## Nomes dos botões do controle (layout PS4) para o aviso na tela.
+const PAD_BUTTON_NAMES := {0: "X", 1: "Bolinha", 2: "Quadrado", 3: "Triângulo", 9: "L1", 10: "R1"}
 
 @export var echo_name := "Eco"
 @export var show_name := true
@@ -43,6 +45,7 @@ var _hud: CanvasLayer
 var _prompt: Label
 var _leave_label: Label
 var _leave_tween: Tween
+var _using_pad := false
 
 
 func _ready() -> void:
@@ -61,6 +64,16 @@ func _ready() -> void:
 	body_exited.connect(_on_body_exited)
 	_build_visual()
 	_build_hud()
+
+
+## Descobre se o último comando veio do controle ou do teclado/mouse (para o aviso na tela).
+func _input(event: InputEvent) -> void:
+	if event is InputEventJoypadButton:
+		_using_pad = true
+	elif event is InputEventJoypadMotion and absf((event as InputEventJoypadMotion).axis_value) > 0.5:
+		_using_pad = true
+	elif event is InputEventKey or event is InputEventMouseButton:
+		_using_pad = false
 
 
 func _process(delta: float) -> void:
@@ -148,6 +161,12 @@ func _on_body_exited(body: Node2D) -> void:
 # ------------------------------------------------------------------ avisos
 
 func _interact_key() -> String:
+	# com controle: mostra o nome do botão (no PS4, o botão de interagir é o Triângulo)
+	if _using_pad:
+		for event in InputMap.action_get_events("interact"):
+			var pad := event as InputEventJoypadButton
+			if pad:
+				return PAD_BUTTON_NAMES.get(pad.button_index, "botão")
 	for event in InputMap.action_get_events("interact"):
 		var key := event as InputEventKey
 		if key:

@@ -1,8 +1,8 @@
 extends CanvasLayer
 ## Barras de teste na tela: brasa (laranja) e sanidade (roxa) com o marcador crítico.
 
-@onready var bar: ProgressBar = $Bar
-@onready var sanity_bar: ProgressBar = $SanityBar
+@onready var bar: TextureProgressBar = $Bar
+@onready var sanity_bar: TextureProgressBar = $SanityBar
 @onready var marker: ColorRect = $SanityBar/CriticalMarker
 
 var _critical := false
@@ -20,8 +20,9 @@ func _ready() -> void:
 	sanity.changed.connect(_on_sanity_changed)
 	sanity.critical_changed.connect(func(value: bool) -> void: _critical = value)
 	_on_sanity_changed(sanity.sanity, sanity.max_sanity)
-	var width := sanity_bar.offset_right - sanity_bar.offset_left
-	marker.position.x = width * sanity.critical_ratio
+	# o preenchimento começa 2 px dentro da borda (texture_progress_offset)
+	var fill_width := float(sanity_bar.texture_progress.get_width())
+	marker.position.x = sanity_bar.texture_progress_offset.x + fill_width * sanity.critical_ratio - 0.5
 
 
 func _process(delta: float) -> void:

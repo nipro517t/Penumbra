@@ -12,7 +12,7 @@ Um herói ágil atravessa um mundo consumido pela escuridão. A luz é refúgio 
 
 ## Como rodar
 1. Abra o projeto no Godot **4.7** (`project.godot`).
-2. Aperte **F5**. A cena principal é `scenes/main.tscn`.
+2. Aperte **F5**. A cena inicial é `scenes/main_menu.tscn`; o botão Jogar carrega `scenes/main.tscn`.
 3. Se aparecer erro de tipo (`Player` ou `EmberComponent` não encontrado) na primeira abertura, feche e reabra o projeto.
 
 ## Controles
@@ -22,12 +22,13 @@ Um herói ágil atravessa um mundo consumido pela escuridão. A luz é refúgio 
 | Pular | Espaço | ✕ |
 | Dash (instantâneo, gasta brasa; no ar vai na direção apertada) | K | ○ ou R1 |
 | Correr (segurar; grátis por padrão) | Shift | R2 |
-| Curar (segurar) | Q | △ |
+| Curar (segurar) | Q | L1 |
 | Slide (baixo correndo) | ↓ ou S correndo | Analógico/D-pad para baixo correndo |
 | Cima (mira do dash no ar) | W ou ↑ | Analógico/D-pad para cima |
 | Agachar | S ou ↓ | Analógico/D-pad para baixo |
 | Atacar (combo de 3 golpes no chão, golpe no ar) | J ou clique esquerdo | □ |
-| Interagir (ainda sem efeito) | E | R3 |
+| Interagir / falar com o eco | E | Triângulo |
+| Pausa (continuar, configurações, voltar ao menu) | Esc | Start |
 
 ## Estrutura
 ```
@@ -35,6 +36,8 @@ scenes/
   main.tscn          cena principal (Level + Player + barra de brasa)
   player.tscn        herói (CharacterBody2D, sprite, câmera, luz, Ember)
   test_level.tscn    fase de teste (túnel baixo, poço, poço com paredes, luzes)
+  capitulo_1.tscn    fase do Capítulo 1 (trechos 1 a 4 montados; a testar)
+  main_cap1.tscn     igual ao main.tscn, mas com o Capítulo 1 (abra e aperte F6 para testar)
   light_source.tscn  fonte de luz (recarrega a brasa)
   enemy_shadow.tscn  inimigo rastejador de sombra
   main_menu.tscn     menu principal estilizado (raio de luz)
@@ -112,7 +115,7 @@ assets/player/adventurer/   frames do herói (arte provisória)
 - [ ] Testar o uso das brasas (dash em 8 direções, cura, estado crítico) e a corrida grátis; ajustar os custos
 - [ ] Escrever as falas da voz (hoje são marcadores) e ligar falas aos estágios de sanidade
 - [ ] Mais tipos de inimigo (ex.: voador à distância) e comportamento em relação à luz
-- [ ] Nível do Capítulo 1 (3 a 4 trechos) com tileset
+- [x] Nível do Capítulo 1: 4 trechos montados com blocos provisórios, eco no topo e tela de fim (a testar; falta tileset e ligar a cutscene ao capítulo)
 - [ ] Corredor escuro (cena especial)
 - [ ] Cutscene de abertura (cidade que decai) e tela de título
 - [ ] Polimento: câmera, partículas, hitstop, áudio, UI
