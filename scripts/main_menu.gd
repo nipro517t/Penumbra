@@ -358,8 +358,12 @@ func _build_ui() -> void:
 
 	_info = Label.new()
 	_info.position = menu_position + Vector2(0.0, 6.0 + options.size() * (button_font_size + 14.0))
+	# a mensagem não pode sair da tela (antes ficava cortada embaixo)
+	_info.position.y = minf(_info.position.y, get_viewport_rect().size.y - 22.0)
 	_info.add_theme_font_size_override("font_size", 10)
-	_info.add_theme_color_override("font_color", Color(0.7, 0.65, 0.78))
+	_info.add_theme_color_override("font_color", Color(0.8, 0.75, 0.88))
+	_info.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.9))
+	_info.add_theme_constant_override("outline_size", 3)
 	_info.modulate.a = 0.0
 	ui.add_child(_info)
 

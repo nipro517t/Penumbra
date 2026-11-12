@@ -196,11 +196,14 @@ func _build_overlays() -> void:
 
 	_hint = Label.new()
 	_hint.text = "Segure Enter ou ✕ para pular"
-	_hint.position = Vector2(size.x - 180.0, size.y - 16.0)
-	_hint.size = Vector2(172.0, 12.0)
+	_hint.position = Vector2(8.0, size.y - 18.0)
+	_hint.size = Vector2(size.x - 16.0, 14.0)
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_hint.autowrap_mode = TextServer.AUTOWRAP_OFF
 	_hint.add_theme_font_size_override("font_size", 8)
-	_hint.add_theme_color_override("font_color", Color(0.8, 0.8, 0.9))
+	_hint.add_theme_color_override("font_color", Color(0.85, 0.85, 0.95))
+	_hint.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 0.9))
+	_hint.add_theme_constant_override("outline_size", 3)
 	_hint.modulate.a = 0.0
 	text_layer.add_child(_hint)
 
