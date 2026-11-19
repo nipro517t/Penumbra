@@ -13,6 +13,15 @@ extends Area2D
 ## Pontos do corpo do herói usados na linha de visão (basta um deles estar visível).
 @export var sight_offsets: Array[Vector2] = [Vector2(0.0, -10.0), Vector2.ZERO, Vector2(0.0, 10.0)]
 
+## Otimização: a luz (com sombra) só é desenhada quando está perto da tela.
+## Isso NÃO afeta a zona de efeito (recarga, sanidade, checkpoint), só o desenho.
+@export var cull_lights := true
+## Folga extra (px) além da borda da tela antes de apagar a luz.
+@export var cull_margin := 60.0
+
+var _cull_timer := 0.0
+var _player_ref: Node2D
+
 @onready var light: PointLight2D = $PointLight2D
 @onready var zone: CollisionShape2D = $CollisionShape2D
 
@@ -32,6 +41,25 @@ func _fit_zone() -> void:
 	zone.shape = circle
 	circle.radius = light.texture.get_width() * 0.5 * light.texture_scale * zone_ratio
 	zone.position = light.position
+
+
+func _process(delta: float) -> void:
+	if not cull_lights:
+		return
+	_cull_timer -= delta
+	if _cull_timer > 0.0:
+		return
+	_cull_timer = 0.15
+	if _player_ref == null or not is_instance_valid(_player_ref):
+		_player_ref = get_tree().get_first_node_in_group("player") as Node2D
+		if _player_ref == null:
+			return
+	var reach := 0.0
+	if light.texture:
+		reach = light.texture.get_width() * 0.5 * light.texture_scale
+	var half := get_viewport_rect().size * 0.5
+	var d := (light.global_position - _player_ref.global_position).abs()
+	light.visible = d.x < half.x + reach + cull_margin and d.y < half.y + reach + cull_margin
 
 
 func _physics_process(delta: float) -> void:

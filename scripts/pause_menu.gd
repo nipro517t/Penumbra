@@ -18,6 +18,7 @@ var fullscreen := false
 var _pause_list = null
 var _settings_list = null
 var _settings_return: Callable = Callable()
+var _fps_label: Label
 
 
 func _ready() -> void:
@@ -25,6 +26,19 @@ func _ready() -> void:
 	_ensure_pause_action()
 	_load_settings()
 	_apply_settings(true)
+
+	# contador de FPS (tecla F3), para medir o desempenho
+	var fps_layer := CanvasLayer.new()
+	fps_layer.layer = 100
+	add_child(fps_layer)
+	_fps_label = Label.new()
+	_fps_label.position = Vector2(4.0, 2.0)
+	_fps_label.add_theme_font_size_override("font_size", 8)
+	_fps_label.add_theme_color_override("font_color", Color(0.6, 1.0, 0.6))
+	_fps_label.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0))
+	_fps_label.add_theme_constant_override("outline_size", 3)
+	_fps_label.visible = false
+	fps_layer.add_child(_fps_label)
 
 	_settings_list = ListMenu.new()
 	_settings_list.layer = 52
@@ -65,7 +79,16 @@ func _ready() -> void:
 	add_child(_pause_list)
 
 
+func _process(_delta: float) -> void:
+	if _fps_label.visible:
+		_fps_label.text = "FPS: %d" % Engine.get_frames_per_second()
+
+
 func _input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if key and key.pressed and not key.echo and key.keycode == KEY_F3:
+		_fps_label.visible = not _fps_label.visible
+		return
 	if event.is_echo() or not event.is_action_pressed("pause"):
 		return
 	if get_tree().paused or _pause_list.is_open() or _settings_list.is_open():
